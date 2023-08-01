@@ -1,0 +1,17 @@
+html {
+    --primary-color: #FCF6B1;
+    --secondary-color: #F7B32B;
+    --font-color: #321325;
+}
+
+body {
+    font-family: sans-serif;
+    margin: 5vh 15vw 15vh 15vw;
+    font-size: 20px;
+}
+
+* {
+    background-color: var(--primary-color);
+    border-color: var(--font-color);
+    color: var(--font-color);
+}

@@ -1,0 +1,10 @@
+---
+layout: default
+---
+<title>{{ page.title }}</title>
+
+<h1>{{ page.title }}™</h1>
+
+{% for recipe in site.recipes %}
+  <li> <a href="{{ recipe.url | relative_url }}"> {{ recipe.title }} </a> </li>
+{% endfor %}

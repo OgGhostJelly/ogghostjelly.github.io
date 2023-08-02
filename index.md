@@ -1,6 +1,9 @@
 ---
 layout: navigator
-title: "OgGhostJelly's Hangout"
+title: "Cooking With OgGhostJelly"
 ---
 
-* [Cooking With OgGhostJelly](cooking-with-ogghostjelly)
+
+{% for recipe in site.recipes %}
+  * [{{ recipe.title }}]({{recipe.url | relative_url}})
+{% endfor %}

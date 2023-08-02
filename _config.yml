@@ -29,7 +29,7 @@ github_username:  jekyll
 collections:
   recipes:
     output: true
-    permalink: /cooking-with-ogghostjelly/:title
+    permalink: :relative_path/:title
 
 defaults:
   - scope:

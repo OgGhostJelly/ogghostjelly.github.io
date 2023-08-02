@@ -1,5 +1,5 @@
 ---
 layout: navigator
 target_collection: navigators
-title: {{ site.title }}
+title: OgGhostJelly's Hangout
 ---

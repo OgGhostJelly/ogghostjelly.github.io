@@ -24,6 +24,7 @@ baseurl: /cooking-with-ogghostjelly
 url: https://ogghostjelly.github.io # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: jekyllrb
 github_username:  jekyll
+destination: ./build # build destination
 
 
 collections:

@@ -5,6 +5,8 @@ layout: default
 
 <h1>{{ page.title }}™</h1>
 
-{% for recipe in site.recipes %}
+{{ content }}
+
+{% for recipe in site[page.target_collection] %}
   <li> <a href="{{ recipe.url | relative_url }}"> {{ recipe.title }} </a> </li>
 {% endfor %}

@@ -1,4 +1,5 @@
 ---
 layout: navigator
-title: "Cooking With OgGhostJelly"
+title: "OgGhostJelly's Hangout"
+target_collection: navigators
 ---

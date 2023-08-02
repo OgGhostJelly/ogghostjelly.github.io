@@ -18,7 +18,7 @@ collections:
     permalink: cooking-with-ogghostjelly/:title
   navigators:
     output: true
-    permalink: /:title/:output_ext
+    permalink: /:title/
 
 defaults:
   - scope:

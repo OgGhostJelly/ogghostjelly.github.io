@@ -7,7 +7,11 @@ h1 {
 /* Preview Image */
 
 .preview-image {
+    /* General */
+
     width: 50vw;
+
+    /* Border */
 
     border-radius: 1vw;
     border-width: 0.5vw;

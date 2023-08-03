@@ -1,7 +1,7 @@
 ---
 title: Hot Chocolate
 description: Hot chocolate with way too many ingredients.
-preview_src: /assets/images/recipe/previews/hot-chocolate.jpg
+#preview_src: /assets/images/recipe/previews/hot-chocolate.jpg
 
 
 ingredients:

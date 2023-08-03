@@ -1,7 +1,7 @@
 ---
 title: Bread Pudding
 description: Great for getting rid of stale bread!
-preview_src: /assets/images/recipe/previews/bread-pudding.jpg
+#preview_src: /assets/images/recipe/previews/bread-pudding.jpg
 
 
 ingredients:

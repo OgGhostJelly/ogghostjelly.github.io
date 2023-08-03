@@ -1,6 +1,10 @@
+/* Header */
+
 h1 {
     text-align: center;
 }
+
+/* Preview Image */
 
 .preview-image {
     width: 50vw;
@@ -15,6 +19,8 @@ h1 {
     margin-left: auto;
     margin-right: auto;
 }
+
+/* Section */
 
 .section {
     margin-top: 20vh;

@@ -24,23 +24,21 @@ h1 {
     list-style-type: disc;
 }
 
+
+/* Reset counter on header */
+
 .section > ol {
-    list-style-type: decimal;
-}
-/*
-@keyframes drop {
-    0%   {left:-1200px; top:0px; opacity: 0;}
-    100% {left:0px; top:0px; opacity: 1; visibility: visible;}
+    list-style: none;
 }
 
-.section:nth-child(odd) {
-    background-color: var(--primary-color);
-    overflow: auto;
+.section > ol > h3 {
+    counter-reset: directionCounter;
 }
 
+.section > ol > li::before {
+    content: counter(directionCounter) '. ';
+}
 
-.section:nth-child(even) {
-    background-color: var(--secondary-color);
-    overflow: auto;
-    background-size: cover;
-}*/
+.section > ol > li {
+    counter-increment: directionCounter;
+}

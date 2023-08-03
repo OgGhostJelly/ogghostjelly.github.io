@@ -37,11 +37,15 @@ layout: default
     <hr>
 
     <ol>
+        {% assign counter = 1 %}
+
         {% for direction in page.directions %}
             {% if direction.header %}
                 <h3>{{ direction.header }}</h3>
+                {% assign counter = 1 %}
             {% else %}
-                <li><input type="checkbox"> {{ direction }}</li>
+                <li value="{{ counter }}"><input type="checkbox"> {{ direction }}</li>
+                {% assign counter = counter | plus: 1 %}
             {% endif %}
         {% endfor %}
     </ol>

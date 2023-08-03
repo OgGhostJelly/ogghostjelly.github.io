@@ -23,22 +23,3 @@ h1 {
 .section > ul {
     list-style-type: disc;
 }
-
-
-/* Reset counter on header */
-
-.section > ol {
-    list-style: none;
-}
-
-.section > ol > h3 {
-    counter-reset: directionCounter;
-}
-
-.section > ol > li::before {
-    content: counter(directionCounter) '. ';
-}
-
-.section > ol > li {
-    counter-increment: directionCounter;
-}

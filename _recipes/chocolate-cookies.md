@@ -1,7 +1,7 @@
 ---
 title: Chocolate Cookies
 description: Pretty tasty, I'm not super happy with this recipe yet so I'll probably continue to update it.
-image_src: /assets/images/recipe/chocolate-cookies.jpg
+preview_src: /assets/images/recipe/previews/chocolate-cookies.jpg
 
 
 ingredients:

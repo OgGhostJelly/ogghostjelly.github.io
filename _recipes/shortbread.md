@@ -1,7 +1,7 @@
 ---
 title: Shortbread
 description: Delicious! Usually Served with tea.
-image_src: /assets/images/recipe/shortbread.jpg
+preview_src: /assets/images/recipe/previews/shortbread.jpg
 
 
 ingredients:

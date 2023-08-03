@@ -1,7 +1,7 @@
 ---
 title: Pancakes
 description: English pancakes/Crepes. Yes, there is a difference between American and English pancakes.
-image_src: /assets/images/recipe/pancakes.jpg
+preview_src: /assets/images/recipe/previews/pancakes.jpg
 
 
 ingredients:

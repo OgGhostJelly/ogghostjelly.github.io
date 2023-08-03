@@ -35,12 +35,30 @@ layout: default
 <div class="section">
     <h2>Directions</h2>
     <hr>
+
+    <!-- List counter reset on hitting header -->
+    <style>
+        .direction_listitem {
+            counter-increment: directionCounter;
+            list-style: none;
+        }
+
+        .direction_listitem::before {
+            content: counter(directionCounter) '. ';
+        }
+
+        .direction_header {
+            list-style: none;
+            counter-reset: directionCounter;
+        }
+    </style>
+
     <ol>
         {% for direction in page.directions %}
             {% if direction.header %}
-                <h3>{{ direction.header }}</h3>
+                <li class="direction_header"><h3>{{ direction.header }}</h3></li>
             {% else %}
-                <li><input type="checkbox"> {{ direction }}</li>
+                <li class="direction_listitem"><input type="checkbox"> {{ direction }}</li>
             {% endif %}
         {% endfor %}
     </ol>

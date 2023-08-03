@@ -49,8 +49,8 @@ directions:
   - Mix the rest of the ingredients into the bowl.
   - Place a piece of cut out parchment paper at the bottom of a pan.
   - Butter or oil the pan, then pour in the batter.
-  - Preheat an oven at 175 Â°C
-  - Cook for 45min at 175 Â°C
+  - Preheat an oven at 175 °C
+  - Cook for 45min at 175 °C
   - Take the cake out of the oven and wait for it to cool.
 
 

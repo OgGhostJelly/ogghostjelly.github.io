@@ -8,6 +8,8 @@ layout: default
 
 {{ content }}
 
-{% for recipe in site[page.target_collection] %}
-  <li> <a href="{{ recipe.url | relative_url }}"> {{ recipe.title }} </a> </li>
-{% endfor %}
+<ul>
+  {% for elem in site[page.target_collection] %}
+    <li> <a href="{{ elem.url | relative_url }}"> {{ elem.title }} </a> </li>
+  {% endfor %}
+</ul>

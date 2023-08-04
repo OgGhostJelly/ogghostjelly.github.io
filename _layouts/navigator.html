@@ -10,6 +10,12 @@ layout: default
 
 <ul>
   {% for elem in site[page.target_collection] %}
-    <li> <a href="{{ elem.url | relative_url }}"> {{ elem.title }} </a> </li>
+    <li>
+      {% if elem.favicon_src %}
+      <a href="{{ elem.url | relative_url }}"><img style="width: 2.5ch" src="{{ elem.favicon_src }}"></a>
+      {% endif %}
+      
+      <a href="{{ elem.url | relative_url }}">{{ elem.title }}</a>
+    </li>
   {% endfor %}
 </ul>

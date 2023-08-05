@@ -40,3 +40,23 @@ h1 {
     padding-left: 1.5em;
     text-indent:-1.5em;
 }
+
+
+/* Grids */
+
+.grid-container {
+    display: flex;
+    justify-content: space-evenly;
+
+    border-radius: 0.5vw;
+    border-width: 0.25vw;
+    border-style: solid;
+}
+
+.grid-container {
+    background-color: var(--secondary-color);
+}
+
+.grid-container * {
+    background-color: var(--secondary-color);
+}

@@ -14,23 +14,23 @@ favicon_src: /assets/images/navigators/icons/cooking-with-ogghostjelly.jpg
     <p style="text-align: center;">{{ page.description }}</p>
 </div>
 
-{% if page.inactive_time or page.active_time or page.total_time or page.servings %}
+{% if page.active_time or page.inactive_time or page.total_time or page.servings %}
 <div class="section">
     <div class="grid-container">
-        {% if page.inactive_time %}
-        <span>
-            <h4>Inactive Time:</h4>
-            <p>{{ page.inactive_time }}</p>
-        </span>
-        {% endif %}
-
         {% if page.active_time %}
         <span>
             <h4>Active Time:</h4>
             <p>{{ page.active_time }}</p>
         </span>
         {% endif %}
-
+        
+        {% if page.inactive_time %}
+        <span>
+            <h4>Inactive Time:</h4>
+            <p>{{ page.inactive_time }}</p>
+        </span>
+        {% endif %}
+        
         {% if page.total_time %}
         <span>
             <h4>Total Time:</h4>

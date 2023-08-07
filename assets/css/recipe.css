@@ -51,12 +51,34 @@ h1 {
     border-radius: 0.5vw;
     border-width: 0.25vw;
     border-style: solid;
-}
 
-.grid-container {
     background-color: var(--secondary-color);
 }
 
 .grid-container * {
+    background-color: inherit
+}
+
+/* Rating Meter */
+
+.rating-meter {
+    border-radius: 0.5vw;
+    border-width: 0.25vw;
+    border-style: solid;
+    
     background-color: var(--secondary-color);
+    margin: 0 3vw 3vw 3vw;
+}
+
+.rating-meter * {
+    background-color: inherit;
+}
+
+.rating-meter-fill {
+    height: 1ch;
+    background-color: var(--font-primary-color);
+}
+
+.rating-meter-fill * {
+    background-color: inherit;
 }

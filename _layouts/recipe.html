@@ -14,8 +14,22 @@ favicon_src: /assets/images/navigators/icons/cooking-with-ogghostjelly.jpg
     <p style="text-align: center;">{{ page.description }}</p>
 </div>
 
-{% if page.active_time or page.inactive_time or page.total_time or page.servings %}
+{% if page.active_time or page.inactive_time or page.total_time or page.servings or page.rating %}
 <div class="section">
+    {% if page.rating %}
+    <style>
+        .rating-meter-fill {
+            width: {{ page.rating | times: 100 }}%;
+        }
+    </style>
+
+    <h3 style="text-align: center; margin: 0;">Moistness</h3>
+    <div class="rating-meter">
+        <div class="rating-meter-fill"></div>
+    </div>
+    {% endif %}
+
+    {% if page.active_time or page.inactive_time or page.total_time or page.servings %}
     <div class="grid-container">
         {% if page.active_time %}
         <span>
@@ -45,6 +59,7 @@ favicon_src: /assets/images/navigators/icons/cooking-with-ogghostjelly.jpg
         </span>
         {% endif %}
     </div>
+    {% endif %}
 </div>
 {% endif %}
 

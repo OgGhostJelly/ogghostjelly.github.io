@@ -48,15 +48,37 @@ favicon_src: /assets/images/navigators/icons/cooking-with-ogghostjelly.jpg
 </div>
 {% endif %}
 
+<script>
+    function onHeaderCheckboxPressed(self, header_id) {
+        for (const element of document.body.getElementsByClassName(`${header_id}-item`)) {
+            element.checked = self.checked
+        }
+    }
+
+    function onItemCheckboxPressed(self, header_id) {
+        isPressed = true
+
+        for (const element of document.body.getElementsByClassName(`${header_id}-item`)) {
+            if (!element.checked) {
+                isPressed = false
+                break
+            }
+        }
+
+        document.querySelector(`#${header_id}`).checked = isPressed
+    }
+</script>
+
 <div class="section">
     <h2>Ingredients</h2>
     <hr>
     <ul>
         {% for ingredient in page.ingredients %}
             {% if ingredient.header %}
-                <h3>{{ ingredient.header }}</h3>
+                {% assign header_id = forloop.index0 | prepend: "ingredient" %}
+                <h3><input type="checkbox" onchange="onHeaderCheckboxPressed(this, '{{ header_id }}')" id="{{ header_id }}"> {{ ingredient.header }}</h3>
             {% else %}
-                <li><input type="checkbox"> {{ ingredient.item }} - {{ ingredient.amount }}</li>
+                <li><input type="checkbox" onchange="onItemCheckboxPressed(this, '{{ header_id }}')" class="{{ header_id }}-item"> {{ ingredient.item }} - {{ ingredient.amount }}</li>
             {% endif %}
         {% endfor %}
     </ul>
@@ -71,10 +93,11 @@ favicon_src: /assets/images/navigators/icons/cooking-with-ogghostjelly.jpg
 
         {% for direction in page.directions %}
             {% if direction.header %}
-                <h3>{{ direction.header }}</h3>
+                {% assign header_id = forloop.index0 | prepend: "direction" %}
+                <h3><input type="checkbox" onchange="onHeaderCheckboxPressed(this, '{{ header_id }}')" id="{{ header_id }}"> {{ direction.header }}</h3>
                 {% assign counter = 1 %}
             {% else %}
-                <li value="{{ counter }}"><input type="checkbox"> {{ direction }}</li>
+                <li value="{{ counter }}"><input type="checkbox" onchange="onItemCheckboxPressed(this, '{{ header_id }}')" class="{{ header_id }}-item"> {{ direction }}</li>
                 {% assign counter = counter | plus: 1 %}
             {% endif %}
         {% endfor %}

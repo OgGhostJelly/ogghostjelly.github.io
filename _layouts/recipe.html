@@ -23,7 +23,7 @@ favicon_src: /assets/images/navigators/icons/cooking-with-ogghostjelly.jpg
         }
     </style>
 
-    <h3 style="text-align: center; margin: 0;">Moistness</h3>
+    <h3 style="text-align: center; margin: 0;">Moistness: {{ page.rating | times: 100 | remove: ".0" }}%</h3>
     <div class="rating-meter">
         <div class="rating-meter-fill"></div>
     </div>

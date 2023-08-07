@@ -57,4 +57,6 @@ directions:
   - header: Frosting
 
   - Mix the ingredients in a bowl.
+
+rating: 0.5
 ---

@@ -19,6 +19,9 @@ collections:
   navigators:
     output: true
     permalink: /:title/
+  games:
+    output: true
+    permalink: games-with-ogghostjelly/:title
 
 defaults:
   - scope:
@@ -31,6 +34,11 @@ defaults:
       type: "navigators"
     values:
       layout: "navigator"
+  - scope:
+      path: ""
+      type: "games"
+    values:
+      layout: "game"
 
 
 # [ Build settings ] #

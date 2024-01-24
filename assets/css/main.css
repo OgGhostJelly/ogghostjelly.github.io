@@ -18,6 +18,12 @@ body {
     color: var(--font-primary-color);
 }
 
+button:disabled {
+    background-color: var(--font-primary-color);
+    border-color: var(--font-secondary-color);
+    color: var(--primary-color);
+}
+
 a {
     color: var(--font-secondary-color);
     text-decoration: none;

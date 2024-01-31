@@ -26,12 +26,14 @@ button:disabled {
 
 button:hover:enabled {
     background-color: var(--secondary-color);
-    transform: translate(-2px, -2px);
+    transform: translate(-1px, -1px);
+    box-shadow: 1px 1px #321325;
 }
 
 button:active:enabled {
     background-color: var(--primary-color);
     transform: translate(0px, 0px);
+    box-shadow: none;
 }
 
 a {

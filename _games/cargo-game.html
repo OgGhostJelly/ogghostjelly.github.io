@@ -1096,17 +1096,17 @@ pirate_news:
         draw() {
             for (let i = 0; i < this.playerBullets.length; i++) {
                 if (this.playerBullets[i] != null) {
-                    document.querySelector(".bullet-slot.p" + i).textContent = "^"
+                    document.querySelector(".bullet-slot.p.n" + i).textContent = "^"
                 } else {
-                    document.querySelector(".bullet-slot.p" + i).textContent = ""
+                    document.querySelector(".bullet-slot.p.n" + i).textContent = ""
                 }
             }
 
             for (let i = 0; i < this.enemyBullets.length; i++) {
                if (this.enemyBullets[i] != null) {
-                    document.querySelector(".bullet-slot.e" + i).textContent = "v"
+                    document.querySelector(".bullet-slot.e.n" + i).textContent = "v"
                } else {
-                    document.querySelector(".bullet-slot.e" + i).textContent = ""
+                    document.querySelector(".bullet-slot.e.n" + i).textContent = ""
                }
             }
 
@@ -1137,27 +1137,37 @@ pirate_news:
             display: inline-block;
             min-width: 2ch;
         }
+
+        .p {
+            color: yellow;
+            text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+        }
+
+        .e {
+            color: red;
+            text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+        }
     </style>
 
     <div>
         <div>
-            <span>Pirate: </span>
-            <span style="display: inline-block; min-width: 2ch;"><span id="pirate-block" style="display: none;">🛡</span></span>♥<span id="pirate-health">-</span> ▩<span id="pirate-space">-</span> 🔥<span id="pirate-damage">-</span>
+            <span class="e">Pirate: </span>
+            <span style="display: inline-block; min-width: 2ch;"><span id="pirate-block" style="display: none;" class="e">🛡</span></span>♥<span id="pirate-health">-</span> ▩<span id="pirate-space">-</span> 🔥<span id="pirate-damage">-</span>
         </div>
         <div>
             <div>
-                <span class="bullet-slot e2"> </span> <span class="bullet-slot p0">A</span>
+                <span class="bullet-slot e n2"> </span> <span class="bullet-slot p n0">A</span>
             </div>
             <div>
-                <span class="bullet-slot e1">W</span> <span class="bullet-slot p1">A</span>
+                <span class="bullet-slot e n1">W</span> <span class="bullet-slot p n1">A</span>
             </div>
             <div>
-                <span class="bullet-slot e0"> </span> <span class="bullet-slot p2"> </span> 
+                <span class="bullet-slot e n0"> </span> <span class="bullet-slot p n2"> </span> 
             </div>
         </div>
         <div>
-            <span>Player: </span>
-            <span style="display: inline-block; min-width: 2ch;"><span id="player-block" style="display: none;">🛡</span></span>♥<span id="pirate-player-health">-</span> ▩<span id="pirate-player-space">-</span> 🔥<span id="pirate-player-damage">-</span>
+            <span class="p">Player: </span>
+            <span style="display: inline-block; min-width: 2ch;"><span id="player-block" style="display: none;" class="p">🛡</span></span>♥<span id="pirate-player-health">-</span> ▩<span id="pirate-player-space">-</span> 🔥<span id="pirate-player-damage">-</span>
         </div>
     </div>
 

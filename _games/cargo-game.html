@@ -208,6 +208,8 @@ pirate_news:
 <!-- Setup -->
 
 <script>
+    let firstBattle = true
+
     function randrange(start, stop) {
         return Math.random() * (stop - start) + start
     }
@@ -907,6 +909,14 @@ pirate_news:
             this.enemyHealth = this.enemyMaxHealth;
             this.enemyBullets = [null, null, null];
             this.playerBullets = [null, null, null];
+
+            if (firstBattle) {
+                firstBattle = false
+                this.enemyMaxHealth = 150
+                this.enemyHealth = 150
+                this.enemyDamage = 1
+                this.enemyMaxSpace = 10
+            }
 
             let score = ((player.maxHealth / 50.0) + (player.damage / 10.0) + (player.maxSpace / 25.0)) / 3.0
 

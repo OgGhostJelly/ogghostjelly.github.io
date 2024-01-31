@@ -24,6 +24,16 @@ button:disabled {
     color: var(--primary-color);
 }
 
+button:hover:enabled {
+    background-color: var(--secondary-color);
+    transform: translate(-2px, -2px);
+}
+
+button:active:enabled {
+    background-color: var(--primary-color);
+    transform: translate(0px, 0px);
+}
+
 a {
     color: var(--font-secondary-color);
     text-decoration: none;

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cooking with Ghost</title>
+    <link rel="stylesheet" href="assets/index.css">
+    <link rel="icon" type="image/x-icon" href="assets/icon.png">
+    <style>
+        body {
+            background-image: url("assets/background.svg");
+        }
+    </style>
+</head>
+<body>
+    <div id="fade-in-div"></div>
+    <script>
+        const url = new URL(window.location.href + "../")
+        const fadeIn = document.body.querySelector("#fade-in-div")
+        if (document.referrer == url.href) {
+            fadeIn.id = "fade-in"
+        }
+    </script>
+    <style>
+        #fade-in {
+            position: fixed;
+            min-width: 100%;
+            min-height: 100%;
+            left: 0;
+            top: 0;
+            
+            pointer-events: none;
+            
+            animation-name: fade-in;
+            animation-duration: 1s;
+        }
+
+        @keyframes fade-in {
+            from { background-color: #0D0628; opacity: 100%; }
+            to { background-color: #fcd9b1; opacity: 0%; }
+        }
+    </style>
+
+    <h1>Cooking with Ghost</h1>
+
+    <!-- Links -->
+    <div>
+        <a title="Took a wrong turn? Never fear back is here!" href="..">go back</a>
+    </div>
+
+    <!-- About -->
+    <p>
+
+        LIGHT MODE FLASHBANG!!! I put some of my cooking recipes here, I don't really cook anymore though so... this is more of an archive of my old recipes now.
+    </p>
+
+    <div style="display: flex; flex-direction: row;">
+        <a href="gordiverse"><img alt="gordon ramsay" src="assets/gorodn.png"></a>
+        <span><span onclick="updateGordonPepis()" class="unselectable click-pointer"><br><br><br>&lt <span id="gordon-says"></span></span></span>
+        <script>
+            let gordonPepis = document.body.querySelector("#gordon-says")
+
+            function updateGordonPepis() {
+                let options = [
+                    "pepis",
+                    "its gordon time",
+                    "ramsay",
+                    "ghost is cool",
+                    "video games",
+                    "big tonkleton",
+                    "life is roblox",
+                    "i lov vegans",
+                    "idiot sandwich",
+                    "its raw",
+                ]
+                gordonPepis.innerText = options[Math.floor(Math.random() * options.length)]
+            }
+
+            updateGordonPepis()
+        </script>
+    </div>
+    <p>HE REALLY SAID THAT ^^^^</p>
+
+    <!-- Recipes -->
+    <ul>
+        <li><a href="breadpudding" title="It's bread but in pudding. I know super complicated!">bread pudding</a></li>
+        <li><a href="carrotcake" title="Cake for rabbits. (and humans too)">carrot cake</a></li>
+        <li><a href="chocolatecookie" title="just your standard chocolate chip cookies.">chocolate cookies</a></li>
+        <li><a href="hotcoco" title="Hot cocoa but super duper fancy.">over-engineered hot cocoa</a></li>
+        <li><a href="pancake" title="Yummy thin pancakes.">english pancakes</a></li>
+        <li><a href="shortbread" title="Bread but with stunted growth.">shortbread</a></li>
+    </ul>
+</body>
+</html>

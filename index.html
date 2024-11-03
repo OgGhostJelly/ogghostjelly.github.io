@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ogghostjelly's hangout</title>
+    <link rel="stylesheet" href="assets/index.css">
+    
+    <script src="assets/js/utils.js"></script>
+    <script src="assets/js/texteffects.js"></script>
+    <script src="assets/js/draggable.js"></script>
+    <script src="assets/js/animatetitle.js"></script>
+    <script src="assets/js/music.js"></script>
+</head>
+<body>
+    <h1>ogghostjelly's hangout</h1>
+
+    <!-- Links -->
+    <div>
+        <a title="My github page, you might be able to see some projects I'm working on." href="https://github.com/OgGhostJelly">github</a>
+        <a title="My itch.io page, I sometimes put games here.. maybe." href="https://ogghostjelly.itch.io/">itch.io</a>
+        <a title="My youtube channel, I don't really upload that much but consider subscribing anyway." href="https://www.youtube.com/@OgGhostJelly">youtube</a>
+    </div>
+
+    <!-- Projects -->
+    <ul>
+        <li><img class="nav-icon" src="games/assets/icon.png"> <a href="games">my games</a></li>
+        <li><img class="nav-icon" src="cooking/assets/icon.png"> <a href="cooking">my recipes</a></li>
+        <li><img class="nav-icon" src="assets/oldwebsite.png"> <a href="https://ogghostjellyalt.github.io">my old website</a></li>
+    </ul>
+    
+    <footer>
+        <p> check out my <a title="My coder friend also has a website, go check him out!" href="https://coderserif.github.io">other coder friend</a></p>
+        <p>these are some tools I used <a href="https://www.demirramon.com/generators/undertale_text_box_generator">undertale text box generator</a> <a href="https://textcraft.net/style/LittleSMc/undertale">undertale font generator</a> <a href="https://doodad.dev">doodad.dev</a> and i totally ripped the css from <a href="https://toby.fangamer.com">tobyfox</a></p>
+        <p>inspired by these <a href="https://motherfuckingwebsite.com">motherfucking</a> <a href="http://bettermotherfuckingwebsite.com">websites</a></p>
+        <small>if you found a bug or have a suggestion please contact me at <a href="mailto:johnnycambodia09@gmail.com">johnnycambodia09@gmail.com</a></small>
+    </footer>
+
+    <!-- Big chunk of code I stole from my nekoweb site lol -->
+
+    <!-- VHS -->
+    <br>
+    <div class="window" id="vhs-window">
+        <div class="title-bar">
+            <span class="title-bar-text" id="vhs-title"></span>
+            <span class="title-bar-controls">
+                <button class="window-min">-</button>
+                <button class="window-max" style="display: none;">+</button>
+            </span>
+        </div>
+        <span class="window-body" id="vhs-body">
+            <span class="vhs-controls">
+                <span class="vhs-side-controls">
+                    <button id="vhs-play">play</button>
+                    <button id="vhs-pause" style="display: none;">pause</button>
+                </span>
+                <span class="vhs-side-controls">
+                    <button id="vhs-back">back</button>
+                    <button id="vhs-next">next</button>
+                </span>
+            </span>
+            <img src="assets/vhs.png" alt="A vhs tape." style="width: 100%">
+        </span>
+    </div>
+    
+    <!-- vhs music -->
+    <audio id="vhs-music" style="display: none;"></audio>
+    
+    <!-- vhs script -->
+    <script>
+        ;(function(){
+            const music = document.getElementById("vhs-music");
+            let isPaused = true;
+            
+            // pause/play
+            
+            ;(function(){
+                const play = document.getElementById("vhs-play");
+                const pause = document.getElementById("vhs-pause");
+                
+                music.volume = 0.0;
+                let volume = 0.25;
+                
+                play.addEventListener("click", (event) => {
+                    isPaused = false;
+                    startTick();
+                    play.style.display = "none";
+                    pause.style.display = "";
+                })
+                
+                pause.addEventListener("click", (event) => {
+                    isPaused = true;
+                    startTick();
+                    play.style.display = "";
+                    pause.style.display = "none";
+                })
+                
+                let tickId;
+                function tick() {
+                    if (document.hidden) {
+                        music.volume = lerp(music.volume, 0.0, 0.2)
+                    } else if (isPaused) {
+                        music.volume = 0.0;
+                    } else if (music.volume != volume) {
+                        music.volume = Math.min(volume, music.volume + (volume * 0.04))
+                    }
+                    
+                    if (music.volume <= 0.001 && !music.paused) {
+                        music.pause();
+                    } else if (music.volume > 0.001 && music.paused) {
+                        music.play();
+                    }
+                    
+                    if (music.paused) {
+                        clearInterval(tickId);
+                        tickId = null;
+                    }
+                }
+                
+                function startTick() {
+                    if (!document.hidden && !tickId) {
+                        tickId = setInterval(tick, 100);
+                    }
+                }
+                document.addEventListener("visibilitychange", (event) => startTick())
+                startTick();
+            }());
+            
+            // vhs text effect
+            
+            let currentSongName = "";
+            let currentSongAuthor = "";
+            
+            ;(function(){
+                const title = document.getElementById("vhs-title");
+                const body = document.getElementById("vhs-body");
+                
+                let scrollingText = (function*() {
+                    while (true) {
+                        for (const text of texteffects.effect.scroll("Now Playing - "+currentSongName+" by "+currentSongAuthor+" | ")) {
+                            yield text;
+                        }
+                    }
+                }());
+                
+                let waitTimestamp;
+                
+                function tick(timestamp) {
+                    if (timestamp < waitTimestamp) {
+                        window.requestAnimationFrame(tick)
+                        return;
+                    }
+                    
+                    if (!isPaused) {
+                        title.textContent = scrollingText.next().value.slice(0, 16);
+                        waitTimestamp = timestamp + 100;
+                    } else if (body.classList.contains("minimised")) {
+                        title.textContent = "Music Player";
+                        waitTimestamp = timestamp + 100;
+                    } else {
+                        title.textContent = ((timestamp / 1500.0 % 2) > 0.5 ? "Paused" : "​");
+                        waitTimestamp = timestamp + 1000;
+                    }
+                    
+                    window.requestAnimationFrame(tick);
+                }
+                
+                window.requestAnimationFrame(tick);
+            }());
+            
+            ;(function(){
+                let history = [];
+                let historyIndex = -1;
+                
+                function setSong(song) {
+                    currentSongAuthor = song.author;
+                    currentSongName = song.name;
+                    music.currentTime = 0;
+                    music.src = song.src;
+                }
+                
+                function next() {
+                    if (historyIndex >= history.length - 1) {
+                        let song = randsong();
+                        while (history[historyIndex] == song || history[historyIndex - 1] == song) {
+                            song = randsong();
+                        }
+                        historyIndex += 1;
+                        history.push(song);
+                        setSong(song)
+                    } else {
+                        historyIndex += 1;
+                        setSong(history[historyIndex]);
+                    }
+                }
+                
+                function back() {
+                    if (historyIndex <= 0) {
+                        return;
+                    } else {
+                        historyIndex -= 1;
+                        setSong(history[historyIndex]);
+                    }
+                }
+                
+                music.addEventListener("ended", (event) => next());
+                document.getElementById("vhs-next").addEventListener("click", (event) => next())
+                document.getElementById("vhs-back").addEventListener("click", (event) => back())
+                next();
+            }())
+        })();
+    </script>
+    
+    <!-- vhs style -->
+    <style>
+        #vhs-window {
+            min-width: 256px;
+        }
+    
+        .vhs-controls {
+            position: absolute;
+            width: 100%;
+            height: 15%;
+            bottom: 5%;
+            display: flex;
+            justify-content: space-around;
+        }
+        
+        .vhs-side-controls {
+            display: flex;
+            justify-content: center;
+        }
+    </style>
+    
+    <!-- window style -->
+    <style>
+        .title-bar-controls {
+            display: flex;
+        }
+    
+        .title-bar-text {
+            font-weight: 700;
+            letter-spacing: 0;
+            margin-right: 24px;
+        }
+    
+        .window {
+            position: fixed;
+            overflow: hidden;
+            box-shadow: inset -1px -1px #0a0a0a,inset 1px 1px #dfdfdf,inset -2px -2px grey,inset 2px 2px #fff;
+            padding: 3px;
+            background-color: #0e0c12;
+        }
+        
+        .window-body.minimised {
+            display: none;
+        }
+        
+        .title-bar {
+          cursor: move;
+          align-items: center;
+          border-image: linear-gradient(90deg,#dfdfdf,#2b2b2b) 2;
+          border-top:0;
+          border-left:0;
+          border-right:0;
+          border-style: solid;
+          display: flex;
+          justify-content: space-between;
+          padding: 3px 2px 3px 3px;
+        }
+        
+        .window-min {
+            cursor: pointer;
+        }
+        
+        .window-max {
+            cursor: pointer;
+        }
+    </style>
+    
+    <!-- window script -->
+    <script>
+        var highestZindex = 0;
+    
+        for (const win of document.body.getElementsByClassName("window")) {
+            titleBar = win.getElementsByClassName("title-bar")[0];
+            draggable(win, titleBar);
+            
+            let body = win.getElementsByClassName("window-body")[0];
+            let minimise = win.getElementsByClassName("window-min")[0];
+            let maximise = win.getElementsByClassName("window-max")[0];
+            
+            minimise.addEventListener("click", (event) => {
+                body.classList.add("minimised");
+                minimise.style.display = "none";
+                maximise.style.display = "";
+            })
+            
+            maximise.addEventListener("click", (event) => {
+                body.classList.remove("minimised");
+                minimise.style.display = "";
+                maximise.style.display = "none";
+            })
+            
+            win.addEventListener(startdragging, (event) => {
+                win.style.zIndex = highestZindex + 1;
+                highestZindex += 1;
+            })
+        }
+    </script>
+</body>
+</html>

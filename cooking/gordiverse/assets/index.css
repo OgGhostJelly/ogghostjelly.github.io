@@ -1,0 +1,37 @@
+body {
+    --bg-color: #fcd9b1;
+    --fg-color: #321325;
+    --dark-fg-color: #8C93A8;
+    --primary-color: #FF1B1C;
+    --secondary-color: #FF7F11;
+    --ternary-color: #551a8b;
+
+    margin: 40px auto;
+    max-width: 650px;
+    line-height: 1.6;
+    font-size: 18px;
+    color: var(--fg-color);
+    padding: 0 10px;
+    background-color: var(--bg-color);
+    background-image: url("0.png"), url("1.png"), url("2.png"), url("3.png"), url("4.png"), url("5.png");
+    font-family: 'Lucida Console', 'Helvetica', 'Arial';
+    text-align: center;
+}
+
+h1 {
+    text-shadow: 2px 2px var(--dark-fg-color);
+}
+
+/* Anchors */
+
+a {
+    color: var(--ternary-color);
+}
+
+a:hover {
+    color: var(--secondary-color);
+}
+
+a:active {
+    color: var(--primary-color);
+}

@@ -1,0 +1,1623 @@
+<!DOCTYPE html>
+<html lang="en" class=" klrylexndo idc0_350"><head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <link rel="shortcut icon" type="image/x-icon" href="assets/images/games/icons/cargo-game.png">
+    
+    <link rel="stylesheet" href="assets/css/main.css">
+  <link href="data:text/css,%3Ais(%5Bid*%3D'google_ads_iframe'%5D%2C%5Bid*%3D'taboola-'%5D%2C.taboolaHeight%2C.taboola-placeholder%2C%23credential_picker_container%2C%23credentials-picker-container%2C%23credential_picker_iframe%2C%5Bid*%3D'google-one-tap-iframe'%5D%2C%23google-one-tap-popup-container%2C.google-one-tap-modal-div%2C%23amp_floatingAdDiv%2C%23ez-content-blocker-container)%20%7Bdisplay%3Anone!important%3Bmin-height%3A0!important%3Bheight%3A0!important%3B%7D" rel="stylesheet" type="text/css"></head><body class="vsc-initialized">
+      <main class="page-content" aria-label="Content">
+        <div class="wrapper">
+          <title>Cargo Game - Games With OgGhostJelly</title>
+  
+  <!-- Setup -->
+  
+  <script>
+      let firstBattle = true
+  
+      function randrange(start, stop) {
+          return Math.random() * (stop - start) + start
+      }
+  
+      const Player = class {
+          constructor(location, coins, maxSpace, maxHealth, items) {
+              this.location = location;
+              this.coins = coins;
+              this.maxSpace = maxSpace;
+              this.maxHealth = maxHealth
+              this.health = maxHealth;
+              this.items = items;
+              this.damage = 10;
+              this.day = 0;
+          }
+  
+          spaceUsed() {
+              return Object.values(player.items).reduce((a, b) => a + b, 0)
+          }
+  
+          spaceLeft() {
+              return this.maxSpace - this.spaceUsed()
+          }
+      }
+  
+      const Item = class {
+          constructor(name, cost) {
+              this.name = name;
+              this.cost = cost;
+          }
+      }
+  
+      const Location = class {
+          constructor(name, shop_name, news_name, costsMultiplier, weatherConditions, weatherWeights, news, priceRandomVariation) {
+              this.weather = "sunny"
+              this.name = name;
+              this.shop_name = shop_name;
+              this.news_name = news_name;
+              this.costsMultiplier = costsMultiplier;
+              this.weatherConditions = weatherConditions;
+              this.weatherWeights = weatherWeights;
+              this.news = news;
+              this.priceRandomVariation = priceRandomVariation;
+              this.currentVariation = {}
+          };
+  
+          price(item) {
+              return Math.round(items[item].cost * Math.max(0.0, this.costsMultiplier[item] + this.weatherConditions[this.weather][item] + this.currentVariation[item]))
+          }
+  
+          changeWeather() {
+              let sortedKeys = Object.keys(this.weatherWeights).sort((a, b) => this.weatherWeights[a] - this.weatherWeights[b])
+  
+              let cumulative = sortedKeys.reduce((a, b) => {
+                  a.push(a[a.length - 1] + this.weatherWeights[b])
+                  return a
+              }, [0]).slice(1)
+  
+              let random = Math.random() * cumulative[cumulative.length - 1]
+              let selected = 0
+  
+              for (let i = 0; i < cumulative.length; i++) {
+                  if (random < cumulative[i]) {
+                      selected = i
+                      break;
+                  }
+              }
+  
+              this.weather = sortedKeys[selected]
+          }
+      }
+      
+      const Weather = class {
+          constructor(name) {
+              this.name = name;
+          }
+      }
+  
+      const Upgrade = class {
+          constructor(cost, maxHealth, maxSpace, damage) {
+              this.cost = cost;
+              this.maxHealth = maxHealth;
+              this.maxSpace = maxSpace;
+              this.damage = damage;
+          }
+  
+          tryApply() {
+              if (player.coins < this.cost) {
+                  return false
+              }
+  
+              player.coins -= this.cost;
+              player.maxHealth = this.maxHealth;
+              player.health = player.maxHealth
+              player.maxSpace = this.maxSpace;
+              player.damage = this.damage;
+  
+              return true
+          }
+  
+          text() {
+              return "Buy ship ♥" + this.maxHealth + " ▩" + this.maxSpace + " 🔥" + this.damage + " for ⓒ" + this.cost
+          }
+  
+          static create() {
+              function lerp(x, y, t) {
+                  return y*t + x*(1.0-t)
+              }
+  
+              function value(v, r, m) {
+                  return Math.max(Math.round(lerp(v*0.9, v, r)), m)
+              }
+  
+              let score = 1.5 * 3.0
+              score += (Math.random() * 0.5)
+  
+              let maxHealthR = Math.random() * score;
+              score -= maxHealthR;
+              
+              let maxSpaceR = Math.random() * score;
+              score -= maxSpaceR;
+  
+              let damageR = score;
+              score -= damageR;
+  
+              let maxHealth = value(player.maxHealth, maxHealthR, 10)
+              let maxSpace = value(player.maxSpace, maxSpaceR, 5)
+              let damage = value(player.damage, damageR, 5)
+  
+              let cost = Math.round((maxHealth * 2.5) + (maxSpace * 10) + (damage * 25.0))
+              cost += Math.round(Math.random() * (player.coins/5.0) - (player.coins/10.0))
+  
+              return new Upgrade(cost, maxHealth, maxSpace, damage)
+          }
+      }
+  
+      let player = new Player("trawler", 500, 25, 50, {
+          // 
+          "food": 0,
+          // 
+          "cloth": 0,
+          // 
+          "jewellery": 0,
+          // 
+          "alcohol": 0,
+          // 
+      });
+      
+      let items = {
+          // 
+          "food": new Item("Food", parseInt("50")),
+          // 
+          "cloth": new Item("Cloth", parseInt("75")),
+          // 
+          "jewellery": new Item("Jewellery", parseInt("100")),
+          // 
+          "alcohol": new Item("Alcohol", parseInt("125")),
+          // 
+      }
+  
+      let locations = {
+          // 
+          "trawler": new Location("Trawler's Reach",
+              "Trawler's Market",
+              "The Daily Haul",
+              {
+                  // 
+                  "food": parseFloat("0.8"),
+                  // 
+                  "cloth": parseFloat("1.2"),
+                  // 
+                  "jewellery": parseFloat("0.6"),
+                  // 
+                  "alcohol": parseFloat("1.2"),
+                  // 
+              },
+              {
+                  // 
+                  "sunny": {
+                      // 
+                      // 
+                      "food": parseFloat("0.1"),
+                      // 
+                      // 
+                      // 
+                      "cloth": parseFloat("-0.1"),
+                      // 
+                      // 
+                      // 
+                      "jewellery": parseFloat("0.1"),
+                      // 
+                      // 
+                      // 
+                      "alcohol": 0.0,
+                      // 
+                      // 
+                  },
+                  // 
+                  "cloudy": {
+                      // 
+                      // 
+                      "food": 0.0,
+                      // 
+                      // 
+                      // 
+                      "cloth": 0.0,
+                      // 
+                      // 
+                      // 
+                      "jewellery": 0.0,
+                      // 
+                      // 
+                      // 
+                      "alcohol": 0.0,
+                      // 
+                      // 
+                  },
+                  // 
+                  "rainy": {
+                      // 
+                      // 
+                      "food": parseFloat("-0.1"),
+                      // 
+                      // 
+                      // 
+                      "cloth": parseFloat("0.1"),
+                      // 
+                      // 
+                      // 
+                      "jewellery": 0.0,
+                      // 
+                      // 
+                      // 
+                      "alcohol": parseFloat("0.1"),
+                      // 
+                      // 
+                  },
+                  // 
+              },
+              {
+                  // 
+                  "sunny": parseInt("1"),
+                  // 
+                  "cloudy": parseInt("2"),
+                  // 
+                  "rainy": parseInt("2"),
+                  // 
+              },
+              {
+                  // 
+                  "general": [
+                      // 
+                      "Cloth a valuable resource out on the sea.",
+                      // 
+                      "Cloth fishnets. A trawler tradition.",
+                      // 
+                      "Why jewellery negatively affects todays youth. The real enemy!!!",
+                      // 
+                      "Many young trawlers left unable to afford jewellery.",
+                      // 
+                      "Taste the taste of Tasty Beer! Buy at your local Tasty Tastes Tasty Beer shop.",
+                      // 
+                      "Alcohol considered a favourite among trawlers.",
+                      // 
+                  ],
+                  // 
+                  "sunny": [
+                      // 
+                      "\"Terrible conditions for fishing...\" says extremely disapointed trawler.",
+                      // 
+                      "More starving on streets. Food prices continue to increase.",
+                      // 
+                      "\"It's so hot. Take of those clothes... in a non-sexual way of course.\" says insignificant surfer.",
+                      // 
+                      "Tailor bankrupted after recent decline in cloth prices. \"My work is just not appreciated.\"",
+                      // 
+                      "Why are the younger generations spending so much on jewellery? Old fart explains!.",
+                      // 
+                      "Is jewellery considered hip and trendy with the kids now?",
+                      // 
+                  ],
+                  // 
+                  "cloudy": [
+                      // 
+                      "\"What did you say?\" says random trawler.",
+                      // 
+                      "Newspaper company struggles to come up with interesting story.",
+                      // 
+                      "Programmer decides to make another video game. (INSTANTLY REGRETS IT)",
+                      // 
+                      "Extremely boring person says extremely boring things.",
+                      // 
+                      "Today considered fourth most uneventful day in history.",
+                      // 
+                      "Idiot considered stupid.",
+                      // 
+                  ],
+                  // 
+                  "rainy": [
+                      // 
+                      "Residents complain about rising cloth prices!",
+                      // 
+                      "Tailor reopens due to rising cloth prices. \"It's surprising how much I can get away with charging people!\"",
+                      // 
+                      "Recent increase in wasted drunkees roaming the streets.",
+                      // 
+                      "Alcohol on the rise! Why are people starting to drink more booze?",
+                      // 
+                      "\"Great conditions for fishing!\" says enthusiastic trawler.",
+                      // 
+                      "Fish prices on a slow decline.",
+                      // 
+                  ],
+                  // 
+              },
+              parseFloat('0.05')
+          ),
+          // 
+          "rife": new Location("Rife",
+              "Rife Town Center",
+              "Rife Newspaper",
+              {
+                  // 
+                  "food": parseFloat("1.2"),
+                  // 
+                  "cloth": parseFloat("1.2"),
+                  // 
+                  "jewellery": parseFloat("0.6"),
+                  // 
+                  "alcohol": parseFloat("0.8"),
+                  // 
+              },
+              {
+                  // 
+                  "sunny": {
+                      // 
+                      // 
+                      "food": 0.0,
+                      // 
+                      // 
+                      // 
+                      "cloth": 0.0,
+                      // 
+                      // 
+                      // 
+                      "jewellery": 0.0,
+                      // 
+                      // 
+                      // 
+                      "alcohol": 0.0,
+                      // 
+                      // 
+                  },
+                  // 
+                  "cloudy": {
+                      // 
+                      // 
+                      "food": parseFloat("-0.1"),
+                      // 
+                      // 
+                      // 
+                      "cloth": parseFloat("0.1"),
+                      // 
+                      // 
+                      // 
+                      "jewellery": parseFloat("-0.1"),
+                      // 
+                      // 
+                      // 
+                      "alcohol": 0.0,
+                      // 
+                      // 
+                  },
+                  // 
+                  "rainy": {
+                      // 
+                      // 
+                      "food": parseFloat("0.1"),
+                      // 
+                      // 
+                      // 
+                      "cloth": parseFloat("0.1"),
+                      // 
+                      // 
+                      // 
+                      "jewellery": parseFloat("0.1"),
+                      // 
+                      // 
+                      // 
+                      "alcohol": 0.0,
+                      // 
+                      // 
+                  },
+                  // 
+              },
+              {
+                  // 
+                  "sunny": parseInt("2"),
+                  // 
+                  "cloudy": parseInt("1"),
+                  // 
+                  "rainy": parseInt("2"),
+                  // 
+              },
+              {
+                  // 
+                  "general": [
+                      // 
+                      "Residents suffer another food shortage.",
+                      // 
+                      "Food prices continue to increase. Townspeople struggle to afford food.",
+                      // 
+                      "Cloth considered as valuable as gold by many shark hunters.",
+                      // 
+                      "New rife cloth nets specialized in catching sharks work better than normal trawler nets.",
+                      // 
+                      "Rife now considered top manufacturer of exotic shark jewelleries.",
+                      // 
+                      "Rife now a large trading hub for buying exotic shark jewelleries for cheap.",
+                      // 
+                  ],
+                  // 
+                  "sunny": [
+                      // 
+                      "How to cook shark a la mode. A rife delicacy.",
+                      // 
+                      "Rebel vandals desecrate The Great Shark Man statue.",
+                      // 
+                      "Man burns down house trying to cook disgusting shark and ice cream abomination.",
+                      // 
+                      "Why you should believe what I believe. A comprehensive guide on how to be me.",
+                      // 
+                      "Cloth prices begin to stabilize. Cloth shortages ending.",
+                      // 
+                      "Why the earth is actually shark shaped.",
+                      // 
+                  ],
+                  // 
+                  "cloudy": [
+                      // 
+                      "Food prices finally start to stabilize.",
+                      // 
+                      "\"What a great haul we had today!\" says excited hunter.",
+                      // 
+                      "Cloth prices continue to increase after new rife cloth nets invention.",
+                      // 
+                      "Demand for rife cloth nets skyrocket.",
+                      // 
+                      "Jewellery prices plummet with new rife cloth nets making shark jewelleries easier to produce.",
+                      // 
+                      "Some buyers now considering buying jewellery directly from Rife to afford jewellery at lower prices.",
+                      // 
+                  ],
+                  // 
+                  "rainy": [
+                      // 
+                      "\"Shark's don't really surface as much with all this rain\" says annoyed hunter.",
+                      // 
+                      "Lack of shark meat identified as the main cause of recent hungry residents.",
+                      // 
+                      "Rife cloth nets now favourite among shark hunters.",
+                      // 
+                      "Cloth nets starting to be popular with trawlers.",
+                      // 
+                      "Sharks harder to catch in the rain says shark hunter.",
+                      // 
+                      "Shark teeth prices recently increased.",
+                      // 
+                  ],
+                  // 
+              },
+              parseFloat('0.05')
+          ),
+          // 
+          "forven": new Location("Forven",
+              "Forven City Hall",
+              "Forven Postal Service",
+              {
+                  // 
+                  "food": parseFloat("1.2"),
+                  // 
+                  "cloth": parseFloat("0.6"),
+                  // 
+                  "jewellery": parseFloat("1.2"),
+                  // 
+                  "alcohol": parseFloat("1.2"),
+                  // 
+              },
+              {
+                  // 
+                  "sunny": {
+                      // 
+                      // 
+                      "food": 0.0,
+                      // 
+                      // 
+                      // 
+                      "cloth": 0.0,
+                      // 
+                      // 
+                      // 
+                      "jewellery": 0.0,
+                      // 
+                      // 
+                      // 
+                      "alcohol": 0.0,
+                      // 
+                      // 
+                  },
+                  // 
+                  "cloudy": {
+                      // 
+                      // 
+                      "food": 0.0,
+                      // 
+                      // 
+                      // 
+                      "cloth": parseFloat("0.1"),
+                      // 
+                      // 
+                      // 
+                      "jewellery": parseFloat("0.1"),
+                      // 
+                      // 
+                      // 
+                      "alcohol": parseFloat("-0.1"),
+                      // 
+                      // 
+                  },
+                  // 
+                  "rainy": {
+                      // 
+                      // 
+                      "food": 0.0,
+                      // 
+                      // 
+                      // 
+                      "cloth": parseFloat("-0.1"),
+                      // 
+                      // 
+                      // 
+                      "jewellery": parseFloat("-0.1"),
+                      // 
+                      // 
+                      // 
+                      "alcohol": parseFloat("0.1"),
+                      // 
+                      // 
+                  },
+                  // 
+              },
+              {
+                  // 
+                  "sunny": parseInt("3"),
+                  // 
+                  "cloudy": parseInt("2"),
+                  // 
+                  "rainy": parseInt("1"),
+                  // 
+              },
+              {
+                  // 
+                  "general": [
+                      // 
+                      "\"Booze Ban\" causes brewers to begin selling in dark alleyways.",
+                      // 
+                      "Alcohol prices on the black market begins to rise after alcohol ban.",
+                      // 
+                      "Cost of living in Forven continues to increase as food prices stay unhospitably high.",
+                      // 
+                      "Forven residents complain about unaffordable food prices.",
+                      // 
+                      "New shark jewellery fad popular among wealthy Forvens.",
+                      // 
+                      "Many jewellery fanatics complain about overpriced jewelleries.",
+                      // 
+                  ],
+                  // 
+                  "sunny": [
+                      // 
+                      "Forven man does Forven things.",
+                      // 
+                      "Protest about living conditions in downtown Forven escalates.",
+                      // 
+                      "Rife hunters complain about faced prejudices in Forven.",
+                      // 
+                      "Does anyone even read these?",
+                      // 
+                      "Forven politician caught colluding with a pirate lord.",
+                      // 
+                      "Sudden death of influential Forven celebrity raises suspicion.",
+                      // 
+                  ],
+                  // 
+                  "cloudy": [
+                      // 
+                      "Cloth prices start to rise. More cold homeless roaming streets.",
+                      // 
+                      "Rising cloth prices leads to unrest among denizens.",
+                      // 
+                      "Jewellery fad still ongoing. Prices begin to rise.",
+                      // 
+                      "Jewellery costs more than liver says lazy poor person.",
+                      // 
+                      "Alcohol brewers rampant. Alcohol prices start to drop.",
+                      // 
+                      "Alcohol drops in value as Forven relaxes its alcohol ban.",
+                      // 
+                  ],
+                  // 
+                  "rainy": [
+                      // 
+                      "Tailor bankrupted after decreasing cloth prices.",
+                      // 
+                      "Cloth prices drop. Some Forvens complaining about \"not enough poor people\" on the streets.",
+                      // 
+                      "Jewellery fanatics estatic at decreasing jewellery prices. \"I love jewellery more than my wife!\" says one fanatic.",
+                      // 
+                      "Jewellery prices begin to drop as more jewelleries are imported from Rife.",
+                      // 
+                      "Forven crackdown on alcohol ban causes rising alcohol prices.",
+                      // 
+                      "Alcohol prices start to rise as more of it is pushed out of the market.",
+                      // 
+                  ],
+                  // 
+              },
+              parseFloat('0.05')
+          ),
+          // 
+      }
+  
+      let weather = {
+          // 
+          "sunny": new Weather("Sunny"),
+          // 
+          "cloudy": new Weather("Cloudy"),
+          // 
+          "rainy": new Weather("Rainy"),
+          // 
+      }
+  
+      let pirateChance = 0.1;
+  
+      let pirateNews = [
+          // 
+          [
+              // 
+              "Piracy on an extreme rise!",
+              // 
+              "Most waters now considered pirate territory.",
+              // 
+              "Navy outpost taken over by rebel pirates.",
+              // 
+          ],
+          // 
+          [
+              // 
+              "Piracy on a slow rise.",
+              // 
+              "Pirates continue to expand territory.",
+              // 
+              "Random man gets wallet stolen by specially trained pirate parrot. \"I'm not even mad. Just impressed.\" says random man.",
+              // 
+              "Unemployment rates on a rise!",
+              // 
+          ],
+          // 
+          [
+              // 
+              "Piracy at a steady rate.",
+              // 
+          ],
+          // 
+          [
+              // 
+              "Recent decrease in pirate activity.",
+              // 
+              "Undercover pirate posing as navy officer finally caught!",
+              // 
+              "Pirates quitting. \"It's just not that fun anymore.\"",
+              // 
+              "War between two rival pirate factions have significantly decreased the number of piracy reports.",
+              // 
+          ],
+          // 
+          [
+              // 
+              "Navy strikes again! Pirate population significantly decreased!",
+              // 
+              "Human rights activists complain about the navy's crackdown on piracy.",
+              // 
+              "Navy suspected of using criminals for human experimentation.",
+              // 
+          ],
+          // 
+      ];
+  
+      const Game = {
+          tick(isSleeping) {
+              locations[player.location].changeWeather()
+  
+              let item_keys = Object.keys(items)
+              for (let i = 0; i < item_keys.length; i++) {
+                  locations[player.location].currentVariation[item_keys[i]] =
+                      (Math.random() * locations[player.location].priceRandomVariation * 2.0) -
+                      locations[player.location].priceRandomVariation
+              }
+  
+              player.day += 1;
+  
+              LocationDOM.update()
+              if (!isSleeping) {
+                  LocationDOM.tick()
+              }
+              Newspaper.update()
+              Shop.update()
+              LocationSelect.update()
+          },
+      }
+  </script>
+  
+  <!-- Location -->
+  
+  <script>
+      const LocationDOM = {
+          hide() {
+              document.body.querySelector("#location").style.display = "none"
+          },
+  
+          show() {
+              document.body.querySelector("#location").style.display = ""
+          },
+  
+          updateTitle() {
+              document.body.querySelector(".location.title").textContent = locations[player.location].name
+          },
+  
+          updateWeather() {
+              document.body.querySelector(".location.weather").textContent = weather[locations[player.location].weather].name
+          },
+  
+          updateDay() {
+              document.body.querySelector(".location.day").textContent = player.day;
+          },
+  
+          hideUpgrade() {
+              document.body.querySelector("#upgrade").style.display = "none"
+          },
+  
+          showUpgrade() {
+              document.body.querySelector("#upgrade").style.display = ""
+          },
+  
+          upgrade() {
+              if (this.currentUpgrade.tryApply()) {
+                  Shop.update()
+                  this.hideUpgrade()
+              }
+          },
+          
+          currentUpgrade: null,
+  
+          tick() {
+              this.currentUpgrade = null
+              this.hideUpgrade()
+  
+              if (Math.random() > 0.5) {
+                  this.currentUpgrade = Upgrade.create();
+                  document.body.querySelector("#upgrade-message").textContent = this.currentUpgrade.text()
+                  this.showUpgrade()
+              }
+  
+              let tips = [
+                  "Tip: Weather affects the supply and demand of items. Make sure to check the news!",
+                  "Tip: The newspaper will help you figure out the supply and demand of items.",
+                  "Tip: The more demand there is for an item, the higher the price.",
+                  "Tip: The more supply there is for an item, the lower the price.",
+                  "Tip: When it is rainy, you have a chance of being blown off course.",
+                  "Tip: Whenever you sail without encountering a pirate, the pirate spawn chance increases.",
+                  "Tip: Surrendering increases the pirate spawn chance.",
+                  "Tip: Successfully defeating a pirate decreases the pirate spawn chance.",
+              ]
+  
+              document.body.querySelector("#tip")
+                  .textContent = tips[Math.floor(Math.random() * tips.length)]
+          },
+  
+          update() {
+              this.updateTitle()
+              this.updateWeather()
+              this.updateDay()
+          },
+      }
+  </script>
+  
+  <span id="location">
+      <h1 class="location title">Forven</h1>
+      <p>It is currently "<span class="location weather">Sunny</span>" on day <span class="location day">1</span></p>
+  
+      <div>
+          <button onclick="LocationDOM.hide(); Shop.show()">Shop</button>
+          <button onclick="LocationDOM.hide(); Newspaper.show()">Newspaper</button>
+          <button onclick="Game.tick(true)">Sleep</button>
+          <button onclick="LocationDOM.hide(); LocationSelect.show()">Sail</button>
+      </div>
+  
+      <div id="upgrade"><br>
+          <span id="upgrade-message">Buy ship ♥67 ▩23 🔥9 for ⓒ666</span> <button onclick="LocationDOM.upgrade()">Upgrade</button>
+      </div>
+  
+      <div><br>
+          <span id="tip">Tip: Successfully defeating a pirate decreases the pirate spawn chance.</span>
+      </div>
+  </span>
+  
+  <!-- Shop -->
+  
+  <script>
+      const Shop = {
+          hide() {
+              document.body.querySelector("#shop").style.display = "none"
+          },
+  
+          show() {
+              document.body.querySelector("#shop").style.display = ""
+          },
+  
+          hideRepair() {
+              document.body.querySelector("#repair").style.display = "none"
+          },
+  
+          showRepair() {
+              document.body.querySelector("#repair").style.display = ""
+          },
+  
+          repairCost() {
+              return (player.maxHealth - player.health)
+          },
+  
+          updateRepair() {
+              document.body.querySelector("#repair-cost").textContent = this.repairCost()
+          },
+  
+          repair() {
+              let cost = this.repairCost()
+  
+              if (cost > player.coins) {
+                  return
+              }
+  
+              player.coins -= cost
+              player.health = player.maxHealth
+  
+              this.hideRepair()
+              this.updatePlayerBtns()
+              Shop.update()
+          },
+  
+          updateTitle() {
+              document.body.querySelector("#shop-title").textContent = locations[player.location].shop_name
+          },
+  
+          updateBtns() {
+              for (let key in items) {
+                  let priceElement = document.body.querySelector("#price-" + key)
+                  let price = this.price(key)
+                  priceElement.textContent = "ⓒ" + price
+  
+                  let buyBtn = document.body.querySelector("#buy-" + key)
+                  if (this.canBuy(key)) {
+                      buyBtn.removeAttribute("disabled")
+                  } else {
+                      buyBtn.setAttribute("disabled", true)
+                  }
+  
+                  let sellBtn = document.body.querySelector("#sell-" + key)
+                  if (this.canSell(key)) {
+                      sellBtn.removeAttribute("disabled")
+                  } else {
+                      sellBtn.setAttribute("disabled", true)
+                  }
+  
+                  let sellAllBtn = document.body.querySelector("#sell-all-" + key)
+                  if (player.items[key] > 0) {
+                      sellAllBtn.removeAttribute("disabled")
+                  } else {
+                      sellAllBtn.setAttribute("disabled", true)
+                  }
+  
+                  let buyAllBtn = document.body.querySelector("#buy-all-" + key)
+                  if (player.spaceLeft() > 0 && this.canBuy(key)) {
+                      buyAllBtn.removeAttribute("disabled")
+                  } else {
+                      buyAllBtn.setAttribute("disabled", true)
+                  }
+              }
+  
+              if (player.health < player.maxHealth) {
+                  this.updateRepair()
+                  this.showRepair()
+              }
+          },
+  
+          updatePlayerBtns() {
+              document.querySelector("#player-coin").textContent = player.coins
+              document.querySelector("#player-space").textContent = player.spaceUsed() + "/" + player.maxSpace
+              document.querySelector("#player-health").textContent = player.health + "/" + player.maxHealth
+              document.querySelector("#player-damage").textContent = player.damage
+  
+              for (let key in items) {
+                  let amountElement = document.querySelector("#player-" + key)
+                  amountElement.textContent = player.items[key]
+              }
+          },
+  
+          update() {
+              this.updateTitle()
+              this.updateBtns()
+              this.updatePlayerBtns()
+          },
+  
+          price(item) {
+              return locations[player.location].price(item)
+          },
+  
+          canBuy(item) {
+              return this.price(item) <= player.coins && (player.spaceUsed() + 1) <= player.maxSpace
+          },
+  
+          canSell(item) {
+              return player.items[item] >= 1
+          },
+  
+          onBuy(item) {
+              if (!this.canBuy(item)) {
+                  return
+              }
+  
+              let price = this.price(item);
+              player.coins -= price;
+              player.items[item] += 1;
+              
+              this.update()
+          },
+  
+          onSell(item) {
+              if (!this.canSell(item)) {
+                  return
+              }
+  
+              let price = this.price(item)
+              player.coins += price;
+              player.items[item] -= 1;
+  
+              this.update()
+          },
+  
+          buyAll(item) {
+              let count = player.spaceLeft()
+              for (let i = 0; i < count; i++) {
+                  this.onBuy(item)
+              }
+          },
+  
+          sellAll(item) {
+              let count = player.items[item]
+              for (let i = 0; i < count; i++) {
+                  this.onSell(item)
+              }
+          },
+      }
+  </script>
+  
+  <span id="shop" style="display: none;">
+      <h1 id="shop-title">Forven City Hall</h1>
+  
+      <div>
+          
+          <div>
+              <span>Food</span>
+              <span id="price-food">ⓒ62</span>
+              <button id="buy-food" onclick="Shop.onBuy('food')">Buy</button>
+              <button id="buy-all-food" onclick="Shop.buyAll('food')">Buy Max</button>
+              <button id="sell-food" onclick="Shop.onSell('food')" disabled="true">Sell</button>
+              <button id="sell-all-food" onclick="Shop.sellAll('food')" disabled="true">Sell All</button>
+          </div>
+          
+          <div>
+              <span>Cloth</span>
+              <span id="price-cloth">ⓒ43</span>
+              <button id="buy-cloth" onclick="Shop.onBuy('cloth')">Buy</button>
+              <button id="buy-all-cloth" onclick="Shop.buyAll('cloth')">Buy Max</button>
+              <button id="sell-cloth" onclick="Shop.onSell('cloth')" disabled="true">Sell</button>
+              <button id="sell-all-cloth" onclick="Shop.sellAll('cloth')" disabled="true">Sell All</button>
+          </div>
+          
+          <div>
+              <span>Jewellery</span>
+              <span id="price-jewellery">ⓒ122</span>
+              <button id="buy-jewellery" onclick="Shop.onBuy('jewellery')">Buy</button>
+              <button id="buy-all-jewellery" onclick="Shop.buyAll('jewellery')">Buy Max</button>
+              <button id="sell-jewellery" onclick="Shop.onSell('jewellery')" disabled="true">Sell</button>
+              <button id="sell-all-jewellery" onclick="Shop.sellAll('jewellery')" disabled="true">Sell All</button>
+          </div>
+          
+          <div>
+              <span>Alcohol</span>
+              <span id="price-alcohol">ⓒ154</span>
+              <button id="buy-alcohol" onclick="Shop.onBuy('alcohol')">Buy</button>
+              <button id="buy-all-alcohol" onclick="Shop.buyAll('alcohol')">Buy Max</button>
+              <button id="sell-alcohol" onclick="Shop.onSell('alcohol')" disabled="true">Sell</button>
+              <button id="sell-all-alcohol" onclick="Shop.sellAll('alcohol')" disabled="true">Sell All</button>
+          </div>
+          
+          <div id="repair" style="display: none;">
+              <br>
+              <button onclick="Shop.repair()">Repair Ship ⓒ<span id="repair-cost">-</span></button>
+          </div>
+      </div>
+  
+      <div>
+          <h2>Player</h2>
+  
+          <div>
+              ♥<span id="player-health">50/50</span> ▩<span id="player-space">0/25</span> ⓒ<span id="player-coin">500</span> 🔥<span id="player-damage">10</span>
+          </div>
+  
+          
+          <div>
+              Food: <span id="player-food">0</span>
+          </div>
+          
+          <div>
+              Cloth: <span id="player-cloth">0</span>
+          </div>
+          
+          <div>
+              Jewellery: <span id="player-jewellery">0</span>
+          </div>
+          
+          <div>
+              Alcohol: <span id="player-alcohol">0</span>
+          </div>
+          
+      </div>
+  
+      <br>
+      <button onclick="Shop.hide(); LocationDOM.show()">Back</button>
+  </span>
+  
+  <!-- Newspaper -->
+  
+  <script>
+      const Newspaper = {
+          show() {
+              document.body.querySelector("#newspaper").style.display = ""
+          },
+  
+          hide() {
+              document.body.querySelector("#newspaper").style.display = "none"
+          },
+  
+          updateTitle() {
+              document.body.querySelector("#newspaper-title").textContent = locations[player.location].news_name
+          },
+  
+          updateBtns() {
+              let headlinesElem = document.body.querySelector("#newspaper-headlines")
+  
+              function addHeadline(text) {
+                  let ele = document.createElement("li")
+                  ele.textContent = text
+                  headlinesElem.append(ele)
+              }
+  
+              while (headlinesElem.lastChild) {
+                  headlinesElem.removeChild(headlinesElem.lastChild)
+              }
+  
+              let title = document.createElement("h3")
+              title.textContent = "Latest News"
+              headlinesElem.append(title)
+              title = document.createElement("hr")
+              headlinesElem.append(title)
+  
+              let news = locations[player.location].news[locations[player.location].weather].slice()
+              addHeadline(news.splice(Math.floor(Math.random() * news.length), 1)[0])
+              addHeadline(news.splice(Math.floor(Math.random() * news.length), 1)[0])
+  
+              title = document.createElement("h3")
+              title.textContent = "General News"
+              headlinesElem.append(title)
+              title = document.createElement("hr")
+              headlinesElem.append(title)
+  
+              news = locations[player.location].news["general"].slice()
+              addHeadline(news.splice(Math.floor(Math.random() * news.length), 1)[0])
+              addHeadline(news.splice(Math.floor(Math.random() * news.length), 1)[0])
+              
+              if (pirateChance > 0.6) {
+                  news = pirateNews[0].slice()
+              } else if (pirateChance > 0.4) {
+                  news = pirateNews[1].slice()
+              } else if (pirateChance < 0.2) {
+                  news = pirateNews[3].slice()
+              } else if (pirateChance < 0.0) {
+                  news = pirateNews[4].slice()
+              } else {
+                  news = pirateNews[2].slice()
+              }
+              addHeadline(news.splice(Math.floor(Math.random() * news.length), 1)[0])
+          },
+  
+          update() {
+              this.updateTitle()
+              this.updateBtns()
+          },
+      }
+  </script>
+  
+  <span id="newspaper" style="display: none;">
+      <h1 id="newspaper-title">Forven Postal Service</h1>
+  
+      <div id="newspaper-headlines"><h3>Latest News</h3><hr><li>Rife hunters complain about faced prejudices in Forven.</li><li>Forven politician caught colluding with a pirate lord.</li><h3>General News</h3><hr><li>Cost of living in Forven continues to increase as food prices stay unhospitably high.</li><li>Many jewellery fanatics complain about overpriced jewelleries.</li><li>War between two rival pirate factions have significantly decreased the number of piracy reports.</li></div>
+  
+      <br>
+      <button onclick="Newspaper.hide(); LocationDOM.show()">Back</button>
+  </span>
+  
+  <!-- Location Select -->
+  
+  <script>
+      const LocationSelect = {
+          show() {
+              document.body.querySelector("#location-select").style.display = ""
+          },
+  
+          hide() {
+              document.body.querySelector("#location-select").style.display = "none"
+          },
+  
+          sail() {
+              // Chance to fight a pirate.
+              if (Math.random() > 1.0 - pirateChance) {
+                  Pirate.start();
+                  return
+              }
+  
+              pirateChance += 0.05;
+              Game.tick();
+              LocationDOM.show();
+          },
+  
+          onSelect(id) {
+              if (player.location == id) {
+                  return
+              }
+  
+              LocationSelect.hide()
+  
+              // Chance to get blown off course.
+              if (locations[player.location].weather == "rainy" && Math.random() > (player.spaceUsed() / 50.0 + 0.25) ) {
+                  let choices = Object.keys(locations)
+                  player.location = choices[Math.floor(Math.random() * choices.length)]
+                  StrongWinds.start();
+                  return
+              }
+  
+              player.location = id;
+              this.sail()
+          },
+  
+          update() {
+              for (let key in locations) {
+                  let btn = document.body.querySelector("#location-select-" + key)
+                  if (player.location == key) {
+                      btn.setAttribute("disabled", "")
+                  } else {
+                      btn.removeAttribute("disabled")
+                  }
+              }
+          },
+      }
+  </script>
+  
+  <span id="location-select" ,="" style="display: none;">
+      <h1>Where do you want to go?</h1>
+  
+      <div>
+          
+          <button id="location-select-trawler" onclick="LocationSelect.onSelect('trawler')">Trawler's Reach</button>
+          
+          <button id="location-select-rife" onclick="LocationSelect.onSelect('rife')">Rife</button>
+          
+          <button id="location-select-forven" onclick="LocationSelect.onSelect('forven')" disabled="">Forven</button>
+          
+      </div>
+  
+      <br>
+      <button onclick="LocationSelect.hide(); LocationDOM.show()">Back</button>
+  </span>
+  
+  <!-- Pirate -->
+  
+  <script>
+      const Pirate = {
+          enemyBlock: null,
+          playerBlock: null,
+          enemyMaxHealth: null,
+          enemyHealth: null,
+          enemyBullets: null,
+          playerBullets: null,
+          playerMadeMove: false,
+          interval: null,
+  
+          start() {
+              function snapped(value, step) {
+                  return Math.round(value / step) * step
+              }
+  
+              this.enemyBlock = false;
+              this.playerBlock = false;
+              let random = (Math.random() * 1.5) + 1.0
+              this.enemyMaxHealth = Math.max(snapped(random * player.maxHealth, 5), 10)
+              this.enemyDamage = Math.max(Math.round((2.5 - random) * player.damage), 5);
+              this.enemyMaxSpace = Math.max(player.maxSpace + Math.round((Math.random() * 10.0) - 5), 20)
+              this.enemyHealth = this.enemyMaxHealth;
+              this.enemyBullets = [null, null, null];
+              this.playerBullets = [null, null, null];
+  
+              if (firstBattle) {
+                  firstBattle = false
+                  this.enemyMaxHealth = 150
+                  this.enemyHealth = 150
+                  this.enemyDamage = 4
+                  this.enemyMaxSpace = 10
+              }
+  
+              let score = ((player.maxHealth / 50.0) + (player.damage / 10.0) + (player.maxSpace / 25.0)) / 3.0
+  
+              this.interval = setInterval(() => {
+                  this.update()
+              }, Math.max(Math.min(750.0 / score, 1000.0), 500.0))
+              
+              this.update()
+              this.show()
+          },
+  
+          show() {
+              document.body.querySelector("#pirate").style.display = ""
+              document.body.querySelector("#pirate-buttons").style.display = ""
+          },
+  
+          hide() {
+              document.body.querySelector("#pirate").style.display = "none"
+          },
+  
+          showSurrender() {
+              document.body.querySelector("#surrender").style.display = ""
+          },
+  
+          hideSurrender() {
+              document.body.querySelector("#surrender").style.display = "none"
+          },
+  
+          showVictory() {
+              document.body.querySelector("#victory").style.display = ""
+          },
+  
+          hideVictory() {
+              document.body.querySelector("#victory").style.display = "none"
+          },
+  
+          showExchange() {
+              document.body.querySelector("#victory-exchange").style.display = ""
+          },
+  
+          hideExchange() {
+              document.body.querySelector("#victory-exchange").style.display = "none"
+          },
+  
+          showGameOver() {
+              document.body.querySelector("#game-over").style.display = ""
+          },
+  
+          surrender() {
+              this.showSurrender();
+  
+              pirateChance += 0.1;
+  
+              let lostCargo = 0
+              let lostCoins = Math.floor(randrange(player.coins * 0.0, player.coins * 0.5))
+  
+              for (let key in player.items) {
+                  let lost = Math.floor(Math.random() * player.items[key])
+                  player.items[key] -= lost
+                  lostCargo += lost
+              }
+  
+              player.coins -= lostCoins;
+  
+              document.body.querySelector("#surrender-player-space")
+                  .textContent = lostCargo
+              document.body.querySelector("#surrender-player-coin")
+                  .textContent = lostCoins
+              
+              this.stop()
+              Game.tick();
+          },
+  
+          victory() {
+              this.showVictory();
+  
+              if (Math.random() > 0.3) {
+                  this.showExchange()
+              }
+  
+              pirateChance -= 0.2;
+  
+              let gainedCargo = 0
+              let gainedCoins = Math.floor(randrange(player.coins * 0.1, player.coins * 0.3))
+  
+              let item_keys = Object.keys(items)
+              let amount = Math.floor(Math.random() * player.maxSpace / 4.0)
+              for (let i = 0; i < item_keys.length; i++) {
+                  let gain = Math.floor(Math.random() * amount)
+                  player.items[item_keys[i]] += Math.min(gain, player.spaceLeft())
+                  gainedCargo += gain
+                  amount -= gain;
+              }
+  
+              player.coins += gainedCoins;
+  
+              document.body.querySelector("#victory-player-space")
+                  .textContent = gainedCargo;
+              document.body.querySelector("#victory-player-coin")
+                  .textContent = gainedCoins;
+  
+              this.stop();
+          },
+  
+          exchange() {
+              this.hideExchange()
+  
+              player.maxHealth = this.enemyMaxHealth
+              player.health = 1
+              player.damage = this.enemyDamage
+              player.maxSpace = this.enemyMaxSpace
+          },
+  
+          stop() {
+              clearInterval(this.interval)
+              document.body.querySelector("#pirate-buttons").style.display = "none"
+          },
+  
+          update() {
+              for (let i = 0; i < this.enemyBullets.length; i++) {
+                  if (i==0 && this.enemyBullets[i] != null) {
+                      if (!this.playerBlock) {
+                          player.health -= this.enemyBullets[i];
+                      }
+                      this.enemyBullets[i] = null;
+                      continue
+                  }
+  
+                  this.enemyBullets[i-1] = this.enemyBullets[i]
+                  this.enemyBullets[i] = null
+              }
+  
+              for (let i = 0; i < this.playerBullets.length; i++) {
+                  if (i==0 && this.playerBullets[i] != null) {
+                      if (!this.enemyBlock) {
+                          this.enemyHealth -= this.playerBullets[i];
+                      }
+                      this.playerBullets[i] = null;
+                      continue
+                  }
+  
+                  this.playerBullets[i-1] = this.playerBullets[i]
+                  this.playerBullets[i] = null
+              }
+  
+              this.playerBlock = false;
+              this.enemyBlock = false;
+              this.playerMadeMove = false;
+  
+              if (Math.random() > 0.5) {
+                  this.enemyBullets[this.enemyBullets.length - 1] = this.enemyDamage;
+              } else {
+                  this.enemyBlock = true;
+              }
+  
+              if (player.health <= 0) {
+                  this.stop();
+                  Pirate.showGameOver();
+              } else if (this.enemyHealth <= 0) {
+                  Pirate.victory();
+                  Game.tick();
+              } else {
+                  this.draw()
+              }
+          },
+  
+          shoot() {
+              if (this.playerMadeMove) {
+                  return
+              }
+  
+              this.playerBullets[this.playerBullets.length-1] = player.damage
+              this.playerMadeMove = true;
+              this.draw()
+          },
+  
+          block() {
+              if (this.playerMadeMove) {
+                  return
+              }
+  
+              this.playerBlock = true;
+              this.playerMadeMove = true;
+              this.draw()
+          },
+  
+          draw() {
+              for (let i = 0; i < this.playerBullets.length; i++) {
+                  if (this.playerBullets[i] != null) {
+                      document.querySelector(".bullet-slot.p.n" + i).textContent = "^"
+                  } else {
+                      document.querySelector(".bullet-slot.p.n" + i).textContent = ""
+                  }
+              }
+  
+              for (let i = 0; i < this.enemyBullets.length; i++) {
+                 if (this.enemyBullets[i] != null) {
+                      document.querySelector(".bullet-slot.e.n" + i).textContent = "v"
+                 } else {
+                      document.querySelector(".bullet-slot.e.n" + i).textContent = ""
+                 }
+              }
+  
+              document.querySelector("#pirate-block").style.display = this.enemyBlock ? "" : "none"
+              document.querySelector("#player-block").style.display = this.playerBlock ? "" : "none"
+  
+              document.body.querySelector("#pirate-health")
+                  .textContent = this.enemyHealth + "/" + this.enemyMaxHealth
+              document.body.querySelector("#pirate-player-health")
+                  .textContent = player.health + "/" + player.maxHealth
+              document.body.querySelector("#pirate-damage")
+                  .textContent = this.enemyDamage
+              document.body.querySelector("#pirate-player-damage")
+                  .textContent = player.damage
+              document.body.querySelector("#pirate-space")
+                  .textContent = this.enemyMaxSpace
+              document.body.querySelector("#pirate-player-space")
+                  .textContent = player.maxSpace
+          }
+      }
+  </script>
+  
+  <span id="pirate" style="display: none;">
+      <h1>A pirate attacks!</h1>
+  
+      <style>
+          .bullet-slot {
+              display: inline-block;
+              min-width: 2ch;
+          }
+  
+          .p {
+              color: yellow;
+              text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+          }
+  
+          .e {
+              color: red;
+              text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+          }
+      </style>
+  
+      <div>
+          <div>
+              <span class="e">Pirate: </span>
+              <span style="display: inline-block; min-width: 2ch;"><span id="pirate-block" style="display: none;" class="e">🛡</span></span>♥<span id="pirate-health">-</span> ▩<span id="pirate-space">-</span> 🔥<span id="pirate-damage">-</span>
+          </div>
+          <div>
+              <div>
+                  <span class="bullet-slot e n2"> </span> <span class="bullet-slot p n0">A</span>
+              </div>
+              <div>
+                  <span class="bullet-slot e n1">W</span> <span class="bullet-slot p n1">A</span>
+              </div>
+              <div>
+                  <span class="bullet-slot e n0"> </span> <span class="bullet-slot p n2"> </span> 
+              </div>
+          </div>
+          <div>
+              <span class="p">Player: </span>
+              <span style="display: inline-block; min-width: 2ch;"><span id="player-block" style="display: none;" class="p">🛡</span></span>♥<span id="pirate-player-health">-</span> ▩<span id="pirate-player-space">-</span> 🔥<span id="pirate-player-damage">-</span>
+          </div>
+      </div>
+  
+      <br>
+      <span id="pirate-buttons">
+      <button onclick="Pirate.shoot()">Shoot</button> <button onclick="Pirate.block()">Block</button> <button onclick="Pirate.surrender()">Surrender</button>
+      </span>
+  </span>
+  
+  <span id="surrender" style="display: none;">
+      <h1>You surrendered your loot</h1>
+      
+      <div>
+          You lost
+          ▩<span id="surrender-player-space">-</span>
+          ⓒ<span id="surrender-player-coin">-</span>
+      </div>
+  
+      <br>
+      <button onclick="Pirate.hideSurrender(); Pirate.hide(); LocationDOM.show();">Continue</button>
+  </span>
+  
+  <span id="victory" style="display: none;">
+      <h1>Victory!</h1>
+      
+      <div>
+          You won
+          ▩<span id="victory-player-space">-</span>
+          ⓒ<span id="victory-player-coin">-</span>
+      </div>
+      <br>
+      <div id="victory-exchange" style="display: none;">
+          Do you want to exchange your ship for the pirate ship?
+          <button onclick="Pirate.exchange()">Exchange</button>
+      </div>
+  
+      <br>
+      <button onclick="Pirate.hideVictory(); Pirate.hide(); Game.tick(); LocationDOM.show();">Continue</button>
+  </span>
+  
+  <span id="game-over" style="display: none;">
+      <h1>You died!</h1>
+      <button onclick="window.location.replace(window.location.pathname + window.location.search + window.location.hash)">Retry</button>
+  </span>
+  
+  <!-- Strong Winds -->
+  
+  <script>
+      const StrongWinds = {
+          show() {
+              document.body.querySelector("#strong-winds").style.display = ""
+          },
+  
+          hide() {
+              document.body.querySelector("#strong-winds").style.display = "none"
+          },
+  
+          start() {
+              this.show();
+              
+              let lostCargo = 0
+              
+              for (let key in player.items) {
+                  let lost = Math.floor(Math.random() * player.items[key])
+                  player.items[key] -= lost
+                  lostCargo += lost
+              }
+  
+              let lostCoins = Math.floor(randrange(player.coins * 0.25, player.coins * 0.5))
+              let lostHealth = Math.floor(randrange(player.health * 0.25, player.health * 0.5))
+  
+              player.health -= lostHealth;
+              player.coins -= lostCoins;
+  
+              document.querySelector("#strong-winds-player-health")
+                  .textContent = lostHealth
+              document.querySelector("#strong-winds-player-space")
+                  .textContent = lostCargo
+              document.querySelector("#strong-winds-player-coin")
+                  .textContent = lostCoins
+          },
+      }
+  </script>
+  
+  <span id="strong-winds" style="display: none;">
+      <h1>Strong winds have blown you off course!</h1>
+      <div>
+          You lost
+          ♥<span id="strong-winds-player-health">-</span>
+          ▩<span id="strong-winds-player-space">-</span>
+          ⓒ<span id="strong-winds-player-coin">-</span>
+      </div>
+      <button onclick="StrongWinds.hide(); LocationSelect.sail()">Continue</button>
+  </span></div>
+  
+  <script>
+      let location_keys = Object.keys(locations)
+      player.location = location_keys[Math.floor(Math.random() * location_keys.length)]
+      Game.tick()
+  </script>
+        
+      </main>
+    
+  
+  </body></html>

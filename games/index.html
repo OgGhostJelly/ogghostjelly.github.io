@@ -78,42 +78,26 @@
                 </td></tr>
 
                 <tr><td>
-                    <a id="image">
-                        <img alt="gamignngn!!!!" class="image-full" src="assets/0.png"
-                            onmouseover="this.src='assets/0_laugh.png'"
-                            onmouseout="this.src='assets/0.png'">
-                        
-                        <img alt="gamignngn!!!!" class="image-full" src="assets/1.png"
-                            onmouseover="this.src='assets/1_laugh.png'"
-                            onmouseout="this.src='assets/1.png'">
-                        
-                        <img alt="gamignngn!!!!" class="image-full" src="assets/2.png"
-                            onmouseover="this.src='assets/2_laugh.png'"
-                            onmouseout="this.src='assets/2.png'">
-                        
-                        <img alt="gamignngn!!!!" class="image-full" src="assets/3.png"
-                            onmouseover="this.src='assets/3_laugh.png'"
-                            onmouseout="this.src='assets/3.png'">
-                        
-                        <img alt="gamignngn!!!!" class="image-full" src="assets/4.png"
-                            onmouseover="this.src='assets/4_laugh.png'"
-                            onmouseout="this.src='assets/4.png'">
-                        
-                        <img alt="gamignngn!!!!" class="image-full" src="assets/5.png"
-                            onmouseover="this.src='assets/5_laugh.png'"
-                            onmouseout="this.src='assets/5.png'">
-                    </a>
+                    <a><img id="image" alt="gamignngn!!!!" class="image-full"></a>
                     <script>
+                        const options = [
+                            ["assets/0.png","assets/0_laugh.png"],
+                            ["assets/1.png","assets/1_laugh.png"],
+                            ["assets/2.png","assets/2_laugh.png"],
+                            ["assets/3.png","assets/3_laugh.png"],
+                            ["assets/4.png","assets/4_laugh.png"],
+                            ["assets/5.png","assets/5_laugh.png"],
+                        ]
                         let image = document.body.querySelector("#image")
-                        let index = Math.floor(Math.random() * image.children.length)
-        
-                        Array.from(image.children).forEach((value, i) => {
-                            if (index == i) {
-                                return;
-                            }
-        
-                            value.remove()
-                        })
+                        let option = options[Math.floor(Math.random() * options.length)]
+
+                        if (Math.random() <= 0.01) {
+                            option = ["assets/ramsay.png","assets/ramsay.png"]
+                        }
+
+                        image.addEventListener("mouseover", () => image.src = option[1])
+                        image.addEventListener("mouseout", () => image.src = option[0])
+                        image.src = option[0]
                     </script>
                 </td></tr>
             </tbody>

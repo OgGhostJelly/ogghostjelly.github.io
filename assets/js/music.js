@@ -14,7 +14,8 @@ const music = [
     new MusicItem("i thought we were lovers.mp3", "i thought we were lovers", "in love with a ghost", "https://open.spotify.com/track/23VciRIsKDL6JjfhQzTKiY"),
     new MusicItem("james brown.mp3", "James Brown", "Cage the Elephant", "https://open.spotify.com/track/7wqGNKgDuDsOSLbWQgrqqK"),
     new MusicItem("bready steady go.mp3", "BREADY STEADY GO", "OMORI", "https://open.spotify.com/track/021bvbV0fD3JtZPFHwxJk3"),
-    new MusicItem("leopard.mp3", "Leopard", "Jack Stauber", "https://open.spotify.com/track/4TfCsnA1oYDI91st4X594i?si=208a70f495384972")
+    new MusicItem("leopard.mp3", "Leopard", "Jack Stauber", "https://open.spotify.com/track/4TfCsnA1oYDI91st4X594i"),
+    new MusicItem("worst case scenario.mp3", "Worst Case Scenario", "The Hoosiers", "https://open.spotify.com/track/3JRiuXnRjZyK8S6WHNdEJk"),
 ]
 
 function randsong() {

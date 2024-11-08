@@ -3,8 +3,10 @@
      
     function getTimeGreeting() {
         let hour = new Date().getHours();
-        if (hour > 18 || hour < 3) {
-            return choose(["good evening", "oyasumi"]);
+        if (hour > 21 || hour < 3) {
+            return choose(["good night", "oyasumi"])
+        } else if (hour > 15) {
+            return "good evening";
         } else if (hour > 10) {
             return "good afternoon";
         } else {

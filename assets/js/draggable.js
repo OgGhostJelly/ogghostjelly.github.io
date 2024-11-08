@@ -23,23 +23,6 @@ var draggable = (function(module){
             elmnt.style.top = pos[1] + "px";
         }
         
-        function onDrag(e) {
-            e = e || window.event;
-            e.preventDefault();
-            
-            expectedPos = null;
-            
-            // set the element's new position:
-            setPos(clampToScreen(e.pageX - mouseOffsetX, e.pageY - mouseOffsetY));
-        }
-        
-        function onMouseUp() {
-            document.removeEventListener("mousemove", onDrag);
-            document.removeEventListener("mouseup", onMouseUp);
-            
-            elmnt.dispatchEvent(stopdraggingEvent);
-        }
-        
         window.addEventListener("resize", (event) => {
             setPos(clampToScreen(elmnt.offsetLeft, elmnt.offsetTop));
         });
@@ -49,18 +32,45 @@ var draggable = (function(module){
                 setPos(clampToScreen(elmnt.offsetLeft, elmnt.offsetTop));
             }
         }).observe(elmnt);
-        
-        ;(header || elmnt).addEventListener("mousedown", function onMouseDown(e) {
-            e = e || window.event;
-            e.preventDefault();
-            // get the mouse cursor position at startup:
-            mouseOffsetX = e.pageX - elmnt.offsetLeft;
-            mouseOffsetY = e.pageY - elmnt.offsetTop;
+
+        function registerEvents(start, move, end, transformEvent = (e) => e) {
+            function onDrag(e) {
+                e = e || window.event;
+                e.stopPropagation();
+                e.preventDefault();
+                e = transformEvent(e);
+                
+                expectedPos = null;
+                
+                // set the element's new position:
+                setPos(clampToScreen(e.pageX - mouseOffsetX, e.pageY - mouseOffsetY));
+            }
             
-            document.addEventListener("mousemove", onDrag);
-            document.addEventListener("mouseup", onMouseUp);
+            function onDragStop() {
+                document.removeEventListener(move, onDrag);
+                document.removeEventListener(end, onDragStop);
+                
+                elmnt.dispatchEvent(stopdraggingEvent);
+            }
             
-            elmnt.dispatchEvent(startdraggingEvent);
-        });
+            ;(header || elmnt).addEventListener(start, function onDragStart(e) {
+                e = e || window.event;
+                e.stopPropagation();
+                e.preventDefault();
+                e = transformEvent(e);
+
+                // get the mouse cursor position at startup:
+                mouseOffsetX = e.pageX - elmnt.offsetLeft;
+                mouseOffsetY = e.pageY - elmnt.offsetTop;
+                
+                document.addEventListener(move, onDrag);
+                document.addEventListener(end, onDragStop);
+                
+                elmnt.dispatchEvent(startdraggingEvent);
+            });
+        }
+
+        registerEvents("mousedown", "mousemove", "mouseup")
+        registerEvents("touchstart", "touchmove", "touchend", (e) => e.touches[0])
     };
 }(draggable || {}));

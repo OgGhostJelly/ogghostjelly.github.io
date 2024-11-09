@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <template id="head">
+        <title>{{title}} - Cooking with Ghost</title>
+
+        <meta name="theme-color" content="#fcd9b1">
+        <meta property="og:title" content="{{title}} with Ghost">
+        <meta property="og:locale" content="en_US">
+        <meta name="description" content="{{description}}">
+        <link rel="canonical" content="https://ogghostjelly.github.io/cooking/recipe?r={{id}}">
+        <meta property="og:url" content="https://ogghostjelly.github.io/cooking/recipe?r={{id}}">
+        <meta property="og:site_name" content="{{title}} with Ghost">
+        <meta property="og:type" content="website">
+        <meta name="twitter:card" content="summary">
+        <meta property="twitter:title" content="{{title}} with Ghost">
+        <meta name="twitter:site" content="@OgGhostJelly">
+        <meta name="keywords" content="Cooking, OgGhostJelly, Ghost, {{title}}">
+        <meta name="author" content="OgGhostJelly">
+    </template>
+
+    <link rel="stylesheet" href="assets/index.css">
+    <link rel="icon" type="image/x-icon" href="assets/icon.png">
+    <script src="recipe.js"></script>
+    <style>
+        body {
+            background-image: url("assets/background2.svg");
+        }
+    </style>
+
+    <script src="/lib/htmx.min.js"></script>
+    <script src="/lib/htmx-ext-client-side-templates.js"></script>
+    <script src="/lib/mustache.js"></script>
+</head>
+<body>
+    <span hx-ext="client-side-templates"
+    hx-trigger="load"
+    hx-get="assets/recipes/shortbread.json"
+    hx-swap="innerHTML"
+    mustache-template="body"></span>
+    <span hx-ext="client-side-templates"
+    hx-trigger="load"
+    hx-get="assets/recipes/shortbread.json"
+    hx-swap="innerHTML"
+    mustache-template="head"></span>
+
+    <template id="body">
+        <h1>{{title}}</h1>
+
+        <a href="..">go back</a>
+
+        <div>
+            <img src="shortbread/{{id}}.png" alt="{{title}}">
+            <p>
+                {{description}}
+            </p>
+        </div>
+
+        <h2>ingredients</h2>
+        <input id="batch-size" value="1" placeholder="Batch size" title="Batch size">
+        <ul class="ingredients">
+            {{#ingredients}}
+            <li><input type="checkbox"> {{.}}</li>
+            {{/ingredients}}
+        </ul>
+        <p id="ingredients-desc">{{ingredients-description}}</p>
+        
+        <h2>directions</h2>
+        <ol class="directions">
+            {{#directions}}
+            <li><input type="checkbox"> {{.}}</li>
+            {{/directions}}
+        </ol>
+        <p id="directions-desc">{{directions-description}}</p>
+    </template>
+</body>
+</html>

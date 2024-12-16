@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="theme-color" content="#010A1B">
+    <meta property="og:title" content="literallyjustmysunday">
+    <meta property="og:locale" content="en_US">
+    <link rel="canonical" content="https://ogghostjelly.github.io/games/literallyjustmysunday">
+    <meta property="og:url" content="https://ogghostjelly.github.io/games/literallyjustmysunday">
+    <meta property="og:site_name" content="literallyjustmysunday">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary">
+    <meta property="twitter:title" content="literallyjustmysunday">
+    <meta name="twitter:site" content="@OgGhostJelly">
+    <meta name="keywords" content="Gaming, literallyjustmysunday, Sunday, OgGhostJelly, Ghost">
+    <meta name="author" content="OgGhostJelly">
+    <meta name="robots" content="noindex, nofollow" />
+
+    <title>literally just my sunday</title>
+    <style>
+        body {
+            color: white;
+            margin:40px auto;
+            max-width:650px;
+            line-height:1.6;
+            font-size:18px;
+            padding:0 10px;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+    </style>
+    <script src="daynight.js"></script>
+    <script src="dialog.js"></script>
+</head>
+<body>
+    
+    <img id="image">
+
+    <p id="description"></p>
+    <button id="next" style="display: none;">></button>
+    <span id="choices"></span>
+
+    <script>
+        const imageEle = document.body.querySelector("#image")
+        const descriptionEle = document.body.querySelector("#description")
+        const nextEle = document.body.querySelector("#next")
+        const choicesEle = document.body.querySelector("#choices")
+
+        let imageTime = 0.25
+        let lastTime = 0
+        function imageEleTick(time) {
+            const delta = time - lastTime
+            lastTime = time
+
+            function lerp(a, b, t) {
+                return a * (1.0 - t) + b * t
+            }
+
+            imageTime = lerp(imageTime, daynight.isDay() ? 1.0 : 0.25, 1.0 - Math.exp(-0.001 * delta))
+            imageEle.style.filter = "brightness(" + Math.round(imageTime*100) + "%)"
+            
+            requestAnimationFrame(imageEleTick)
+        }
+        requestAnimationFrame(imageEleTick)
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms))
+        }
+
+        function setDescription(text) {
+            descriptionEle.textContent = text
+        }
+
+        const IMAGE = {
+            SLEEPING: "assets/sleeping.png",
+            AWAKE: "assets/awake.png",
+            LAPTOP: "assets/laptop.png",
+            CHECK_LAPTOP: "assets/check_laptop.png",
+            STAIRCASE_DOWN: "assets/staircase_down.png",
+            STAIRCASE_UP: "assets/staircase_up.png",
+            KITCHEN: "assets/kitchen.png",
+            BREAD: "assets/bread.png",
+            RICE: "assets/rice.png",
+            BIG_CHONKER: "assets/big_chonker.png",
+            CAT: "assets/cat.png",
+        }
+
+        const ALT = {
+            [IMAGE.SLEEPING]: "Someone sleeping.",
+            [IMAGE.AWAKE]: "An empty bed.",
+            [IMAGE.LAPTOP]: "A laptop.",
+            [IMAGE.CHECK_LAPTOP]: "A chair alongside a laptop.",
+            [IMAGE.STAIRCASE_DOWN]: "A staircase leading down to a kitchen.",
+            [IMAGE.STAIRCASE_DOWN]: "A staircase leading up.",
+            [IMAGE.KITCHEN]: "A kitchen.",
+            [IMAGE.BREAD]: "Some bread.",
+            [IMAGE.RICE]: "A pot of rice.",
+            [IMAGE.BIG_CHONKER]: "A big computer.",
+            [IMAGE.CAT]: "The cutest cat ever."
+        }
+
+        function setImage(src) {
+            imageEle.src = src
+            imageEle.alt = ALT[src]
+        }
+
+        function appendDescription(text) {
+            descriptionEle.textContent += text
+        }
+
+        function description(text, props = { append: false, sleepTimes: undefined, defaultSleepTime: undefined }) {
+            if (!props.append) {
+                setDescription("")
+            }
+            return dialog.type(text, (text) => descriptionEle.textContent += text, props.sleepTimes, props.defaultSleepTime)
+        }
+
+        function next() {
+            return new Promise(resolve => {
+                nextEle.style.display = ''
+                nextEle.addEventListener("click", () => {
+                    nextEle.style.display = 'none'
+                    resolve()
+                }, { once: true })
+            })
+        }
+
+        function choices(choices) {
+            return new Promise(resolve => {
+                for (const choice of choices) {
+                    if (!choice) {
+                        continue
+                    }
+                    const ele = document.createElement("button")
+                    ele.textContent = choice.text ? choice.text : choice
+                    ele.onclick = async () => {
+                        choicesEle.innerHTML = ""
+                        if (choice.onclick) {
+                            await choice.onclick()
+                        }
+                        resolve()
+                    }
+                    choicesEle.append(ele)
+                }
+            })
+        }
+
+        async function doDinner() {
+            await description("I need to go help with dinner now.")
+            await next()
+
+            setImage(IMAGE.KITCHEN)
+            daynight.toNight()
+            await description("...")
+            await sleep(4000)
+
+            await description("[8pm]")
+            await sleep(2000)
+
+            await description("I finished eating.")
+            await next()
+            await description("I think I'm going to do some programming before I go to bed.")
+            await next()
+
+            setImage(IMAGE.LAPTOP)
+            await description("...")
+            await next()
+
+            await description("[9pm]")
+            daynight.toNight()
+            await sleep(3000)
+
+            setImage(IMAGE.AWAKE)
+            await description("OK time to sleep.")
+            await next()
+
+            setImage(IMAGE.SLEEPING)
+            await description("...")
+            await next()
+            await description("...")
+            await next()
+            await description("...")
+            await next()
+
+            setImage(IMAGE.CAT)
+            await description("THE END")
+        }
+
+        async function playGames(withFriends) {
+            setImage(IMAGE.BIG_CHONKER)
+            if (withFriends && Math.random() < 0.5) {
+                await description("It seems like they aren't online.")
+                await next()
+                withFriends = false
+            }
+
+            await description("What should I do?")
+
+            await choices([
+                !withFriends ? "Play ULTRAKILL" : null,
+                "Play Minecraft",
+                withFriends ? "Chill in voice chat" : null,
+            ])
+
+            await description("[6pm]")
+            await sleep(2000)
+
+            await description("That was fun!")
+            await next()
+
+            await doDinner()
+        }
+
+        async function doProgramming() {
+            setImage(IMAGE.LAPTOP)
+            await description("This is extremely boring..")
+            await next()
+
+            await description("Why did you choose this option??")
+            await next()
+
+            await doDinner()
+        }
+
+        async function getBreakfast() {
+            setImage(IMAGE.KITCHEN)
+            await description("What should I have for breakfast?")
+            await choices([
+                {
+                    text: "Something with toast",
+                    onclick: async () => {
+                        setImage(IMAGE.BREAD)
+                        await description("Hmmm.. but what with toast?")
+                        await choices([
+                            "Golden syrup",
+                            "Marmalade",
+                            "Marmite",
+                            "Pâté",
+                            {
+                                text: "Bread",
+                                onclick: async () => {
+                                    await description("...")
+                                    await sleep(1000)
+                                    await description("This doesn't taste very nice.")
+                                    await next()
+                                }
+                            }
+                        ])
+                    },
+                },
+                {
+                    text: "Something with rice",
+                    onclick: async () => {
+                        setImage(IMAGE.RICE)
+                        await description("Well.. the only thing I can eat with rice is egg.")
+                        await next()
+                        await description("So I guess I'll have some egg and rice.")
+                        await next()
+                    },
+                }
+            ])
+
+            await description("[12pm]")
+            await sleep(2000)
+
+            await description("Alright I'm full.")
+            await next()
+            setImage(IMAGE.STAIRCASE_UP)
+            await description("Now what.")
+            await choices([
+                {
+                    text: "Play some video games",
+                    onclick: async () => await playGames(false)
+                },
+                {
+                    text: "Play with friends",
+                    onclick: async () => await playGames(true)
+                },
+                {
+                    text: "Do some programming",
+                    onclick: doProgramming
+                },
+            ])
+        }
+
+        async function checkComputer() {
+            setImage(IMAGE.CHECK_LAPTOP)
+            await description("Let's check my laptop.")
+            await next()
+
+            setImage(IMAGE.LAPTOP)
+            await description("And I have 9536 unread messages..")
+            await sleep(1000)
+            await description("I am NOT reading all that.")
+            await next()
+
+            await description("I'm starting to get hungry.. Let's go eat.")
+            await next()
+            await getBreakfast()
+        }
+
+        async function start() {
+            setImage(IMAGE.SLEEPING)
+
+            await sleep(3000)
+            await description("...")
+            await next()
+            
+            setDescription("")
+            await sleep(2000)
+            await description(".. ")
+            await sleep(2000)
+            await description("I'm awake", { append: true })
+            appendDescription("..")
+            await next()
+
+            await description("[5am]")
+            await sleep(2000)
+
+            await description("I hate mornings.")
+            await sleep(1000)
+            daynight.toDay()
+            await sleep(4000)
+            
+            await description("I'm too tired for this.")
+            await next()
+            setDescription("")
+            daynight.toNight()
+            await sleep(4000)
+
+            await description("...")
+            await next()
+
+            await description("...")
+            await next()
+
+            await description("...")
+            await next()
+
+            await description("[10am]")
+            await sleep(1000)
+            daynight.toDay()
+            await sleep(4000)
+            await description("Okay.. waking up for real this time.")
+            await next()
+
+            setImage(IMAGE.AWAKE)
+            await description("What should I do first?")
+            await choices([
+                {
+                    text: "Go eat breakfast",
+                    onclick: async () => {
+                        setImage(IMAGE.STAIRCASE_DOWN)
+                        await description("Let's go eat first.");
+                        await next();
+                        await getBreakfast()
+                    }
+                },
+                {
+                    text: "Check my laptop",
+                    onclick: checkComputer
+                },
+            ])
+        }
+
+        start()
+    </script>
+</body>
+</html>

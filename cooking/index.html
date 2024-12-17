@@ -72,13 +72,13 @@
     
         <div style="display: flex; flex-direction: row;">
             <a href="gordiverse"><img alt="gordon ramsay" src="assets/gorodn.png"></a>
-            <span><span onclick="updateGordonPepis()" class="unselectable click-pointer"><br><br><br>&lt <span id="gordon-says"></span></span></span>
+            <span><span onclick="updateGordonPipis()" class="unselectable click-pointer"><br><br><br>&lt <span id="gordon-says"></span></span></span>
             <script>
-                let gordonPepis = document.body.querySelector("#gordon-says")
+                let gordonPipis = document.body.querySelector("#gordon-says")
     
-                function updateGordonPepis() {
+                function updateGordonPipis() {
                     let options = [
-                        "pepis",
+                        "pipis",
                         "its gordon time",
                         "ramsay",
                         "ghost is cool",
@@ -89,10 +89,10 @@
                         "idiot sandwich",
                         "its raw",
                     ]
-                    gordonPepis.innerText = options[Math.floor(Math.random() * options.length)]
+                    gordonPipis.innerText = options[Math.floor(Math.random() * options.length)]
                 }
     
-                updateGordonPepis()
+                updateGordonPipis()
             </script>
         </div>
         <p>HE REALLY SAID THAT ^^^^</p>

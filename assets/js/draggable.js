@@ -10,8 +10,23 @@ var draggable = (function(module){
         var mouseOffsetY;
         
         function clampToScreen(x, y) {
-            const width  = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
-            const height = window.innerHeight|| document.documentElement.clientHeight|| document.body.clientHeight;
+            const getClampValues = (el) => {
+                const position = window.getComputedStyle(el).position
+                if (position == 'absolute') {
+                    return {
+                        width: document.documentElement.scrollWidth,
+                        height: document.documentElement.scrollHeight,
+                    }
+                } else if (position != 'fixed') {
+                    console.log("draggable element should have position: 'fixed' or position: 'absolute'!")
+                }
+                return {
+                    width: window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth,
+                    height: window.innerHeight|| document.documentElement.clientHeight|| document.body.clientHeight,
+                }
+            };
+
+            const { width, height } = getClampValues(elmnt);
             
             return [
                 Math.max(Math.min(x, width - elmnt.clientWidth),0),

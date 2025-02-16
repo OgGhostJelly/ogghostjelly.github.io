@@ -34,7 +34,26 @@
 </head>
 <!-- TODO: volume slider for vhs music and looping -->
 <body>
-    <h1>ogghostjelly's hangout</h1>
+    <h1>
+        <span class="animate-title">o</span><span class="animate-title">g</span><span class="animate-title">g</span><span class="animate-title">h</span><span class="animate-title">o</span><span class="animate-title">s</span><span class="animate-title">t</span><span class="animate-title">j</span><span class="animate-title">e</span><span class="animate-title">l</span><span class="animate-title">l</span><span class="animate-title">y</span><span class="animate-title">'</span><span class="animate-title">s</span>
+        <span class="animate-title">h</span><span class="animate-title">a</span><span class="animate-title">n</span><span class="animate-title">g</span><span class="animate-title">o</span><span class="animate-title">u</span><span class="animate-title">t</span>
+    </h1>
+    <style>
+        .animate-title {
+            -webkit-user-select: none; /* Safari */
+            -ms-user-select: none; /* IE 10 and IE 11 */
+            user-select: none; /* Standard syntax */
+
+            display: inline-block;
+            transition: transform 0.1s;
+        }
+        .animate-title:hover {
+            transform: scaleY(1.5);
+        }
+        .animate-title:active {
+            transform: scale(1);
+        }
+    </style>
 
     <!-- Links -->
     <nav>

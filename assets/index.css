@@ -27,11 +27,14 @@ h1 {
 /* Anchors */
 
 a {
+    display: inline-flex;
     color: var(--ternary-color);
+    transition: color 0.2s;
 }
 
 a:hover {
     color: var(--secondary-color);
+    transform: skew(-5deg);
 }
 
 a:active {

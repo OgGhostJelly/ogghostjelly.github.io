@@ -1,7 +1,7 @@
 const startdragging = "startdragging";
 const stopdragging = "stopdragging";
 
-var draggable = (function(module){
+var draggable = (function(){
     const startdraggingEvent = new CustomEvent(startdragging);
     const stopdraggingEvent = new CustomEvent(stopdragging);
     
@@ -88,4 +88,4 @@ var draggable = (function(module){
         registerEvents("mousedown", "mousemove", "mouseup")
         registerEvents("touchstart", "touchmove", "touchend", (e) => e.touches[0])
     };
-}(draggable || {}));
+}());

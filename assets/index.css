@@ -34,9 +34,10 @@ a {
 
 a:hover {
     color: var(--secondary-color);
-    transform: skew(-5deg);
+    filter: drop-shadow(var(--secondary-color) 0px 0px 2px);
 }
 
 a:active {
     color: var(--primary-color);
+    filter: drop-shadow(var(--primary-color) 0px 0px 2px);
 }

@@ -18,7 +18,7 @@ var draggable = (function(){
                         height: document.documentElement.scrollHeight,
                     }
                 } else if (position != 'fixed') {
-                    console.log("draggable element should have position: 'fixed' or position: 'absolute'!")
+                    console.warn("draggable element should have position: 'fixed' or position: 'absolute'!")
                 }
                 return {
                     width: window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth,

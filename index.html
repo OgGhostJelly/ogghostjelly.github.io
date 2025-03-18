@@ -31,6 +31,7 @@
     <script src="assets/js/draggable.js"></script>
     <script src="assets/js/animatetitle.js"></script>
     <script src="assets/js/music.js"></script>
+    <script src="assets/js/my_email.js"></script>
 </head>
 <!-- TODO: volume slider for vhs music and looping -->
 <body>
@@ -73,9 +74,25 @@
     
     <footer>
         <p> check out my <a title="My coder friend also has a website, go check him out!" href="https://coderserif.github.io">other coder friend</a></p>
-        <p>these are some tools I used <a href="https://www.demirramon.com/generators/undertale_text_box_generator">undertale text box generator</a> <a href="https://textcraft.net/style/LittleSMc/undertale">undertale font generator</a> <a href="https://doodad.dev">doodad.dev</a> and i totally ripped the css from <a href="https://toby.fangamer.com">tobyfox</a></p>
-        <p>inspired by these <a href="https://motherfuckingwebsite.com">motherfucking</a> <a href="http://bettermotherfuckingwebsite.com">websites</a></p>
-        <small>if you found a bug or have a suggestion please contact me at <a href="mailto:johnnycambodia09@gmail.com">johnnycambodia09@gmail.com</a></small>
+        <p>
+            these are some tools I used <a href="https://www.demirramon.com/generators/undertale_text_box_generator">utdr text gen</a>,
+            <a href="https://textcraft.net/style/LittleSMc/undertale">utdr font gen</a>,
+            <a href="https://doodad.dev">doodad.dev</a>
+            and i totally ripped the css from <a href="https://toby.fangamer.com">tobyfox</a>,
+            feel free to steal the <a href="https://github.com/OgGhostJelly/ogghostjelly.github.io">source code</a> and not credit me <abbr title="serious">/srs</abbr>
+        </p>
+        <p>inspired by <a href="https://www.motherfuckingnarrow.com">these</a> <a href="https://motherfuckingwebsite.com">motherfucking</a> <a href="http://bettermotherfuckingwebsite.com">websites</a> <a href="https://dontfuckwithscroll.com/">and</a> <a href="https://perfectmotherfuckingwebsite.com">theres</a> <a href="https://thebestmotherfuckingwebsite.com">more</a> </p>
+        <small>if you found a bug or have a suggestion please contact me at <a class="my-email"></a></small>
+        <script>
+            // Insert obfuscated email, see `./assets/js/my_email.js` for more information.
+            ;(() => {
+                const links = document.body.querySelectorAll(".my-email");
+                Array.from(links).forEach((el) => {
+                    el.href = "mailto:"+my_email;
+                    el.textContent = my_email;
+                });
+            })();
+        </script>
     </footer>
 
     <!-- Big chunk of code I stole from my nekoweb site lol -->
@@ -116,6 +133,31 @@
         ;(function(){
             const music = document.getElementById("vhs-music");
             let isPaused = true;
+
+            // audio panning effect
+            
+            ;(function(){
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                const audioContext = new AudioContext();
+                const track = audioContext.createMediaElementSource(music);
+                const stereoNode = new StereoPannerNode(audioContext, { pan: 0 });
+                track.connect(stereoNode).connect(audioContext.destination);
+
+                const el = document.getElementById("vhs-window");
+                let oldPan = stereoNode.pan.value;
+
+                function tick() {
+                    const x = el.offsetLeft + el.clientWidth / 2;
+                    const percent = x / document.documentElement.scrollWidth;
+                    const pan = (percent*2)-1;
+                    if (pan != oldPan) {
+                        stereoNode.pan.value = pan;
+                        oldPan = pan;
+                    }
+                    requestAnimationFrame(tick);
+                }
+                requestAnimationFrame(tick);
+            })();
             
             // pause/play
             
@@ -353,5 +395,17 @@
             })
         }
     </script>
+
+    <script>
+        var t = setInterval(function() {
+            if (window.goatcounter && window.goatcounter.visit_count) {
+                clearInterval(t)
+                window.goatcounter.visit_count({append: 'body'})
+                console.log("goatcounter visit count")
+            }
+        }, 100)
+    </script>
+    <script id="goatcounter" data-goatcounter="https://ogghostjelly.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>

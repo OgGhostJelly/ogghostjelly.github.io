@@ -12,8 +12,12 @@ body {
     font-size: 18px;
     color: var(--fg-color);
     padding: 0 10px;
-    background-color: var(--bg-color);
     font-family: 'Lucida Console', 'Helvetica', 'Arial';
+
+    background-color: var(--bg-color);
+    background-image: url("background.webp");
+    background-repeat: no-repeat;
+    background-position: center;
 }
 
 h1 {

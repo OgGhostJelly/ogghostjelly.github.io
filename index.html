@@ -421,13 +421,51 @@
         }
     </script>
 
+    <style>
+        #gcvc-div {
+            float: right;
+            width: 196px;
+            height: 76px;
+            border: 2px solid var(--ternary-color);
+            border-radius: 2px;
+            text-align: center;
+            line-height: 1.35;
+            overflow: hidden;
+            color: var(--ternary-color);
+            font-weight: bold;
+            font-family: Lato;
+        }
+
+        #gcvc-for {
+            font-size: 16px;
+        }
+
+        #gcvc-views {
+            font-size: 22px;
+        }
+
+        #gcvc-by {
+            font-size: 14px;
+        }
+    </style>
     <script>
-        // Append to the <body>; can use a CSS selector to append somewhere else.
-        window.goatcounter.visit_count({ append: 'body' })
+        function onGoatCounterLoaded() {
+            let r = new XMLHttpRequest();
+            r.addEventListener('load', function () {
+                document.querySelector('#gcvc-views').innerText = JSON.parse(this.responseText).count
+            })
+
+            r.open('GET', 'https://ogghostjelly.goatcounter.com/counter/%2F.json')
+            r.send()
+        }
     </script>
-    <script id="goatcounter" data-goatcounter="https://ogghostjelly.goatcounter.com/count" async
-        src="//gc.zgo.at/count.js"></script>
-    <iframe href="https://ogghostjelly.goatcounter.com/counter//.html?no_branding=true"></iframe>
+    <script id="goatcounter" onload="onGoatCounterLoaded()"
+        data-goatcounter="https://ogghostjelly.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+    <div id="gcvc-div">
+        <span id="gcvc-for">Views for this page:</span>
+        <br><span id="gcvc-views">?</span>
+        <br><span id="gcvc-by">stats by GoatCounter</span>
+    </div>
 </body>
 
 </html>

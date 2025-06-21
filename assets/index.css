@@ -16,7 +16,7 @@ body {
 
     background-color: var(--bg-color);
     background-image: url("background.webp");
-    background-repeat: no-repeat;
+    background-repeat: repeat;
     background-position: center;
 }
 
